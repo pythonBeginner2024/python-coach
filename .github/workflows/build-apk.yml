@@ -42,12 +42,25 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      # Étape inchangée : On fabrique l'APK de base
       - name: Construire l'APK (debug)
         run: gradle assembleDebug --stacktrace
 
+      # Étape de signature universelle : elle injecte votre clé Capgo dans l'APK existant
+      - name: Signer l'APK avec votre clé officielle
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/debug
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      # Étape finale : On publie l'APK qui a été signé et mis à jour
       - name: Publier l'APK
         uses: actions/upload-artifact@v4
         with:
           name: python-coach-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
           if-no-files-found: error
