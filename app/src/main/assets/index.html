@@ -1,0 +1,2697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Python Coach : apprendre Python en pratiquant</title>
+<style>
+:root{
+  --bg:#F1F4F9; --surface:#FFFFFF; --surface-2:#F6F8FC; --line:#D5DDEA;
+  --ink:#0F2342; --ink-2:#51607C;
+  --blue:#2B5F9E; --blue-ink:#FFFFFF;
+  --yellow:#FFD43B; --yellow-ink:#3D2F00;
+  --green:#17794E; --green-bg:#E3F4EB;
+  --red:#B3302F; --red-bg:#FCE8E7;
+  --warn-bg:#FFF6D1; --warn-line:#E2BD1E;
+  --term:#0F2342; --term-ink:#E6EDF9; --term-dim:#8FA3C4; --term-err:#FFB4B0;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0A1424; --surface:#10223B; --surface-2:#0D1B30; --line:#243A5C;
+    --ink:#E6EDF9; --ink-2:#9FB1CE;
+    --blue:#7DB1F0; --blue-ink:#07182E;
+    --green:#5FD39A; --green-bg:#0F2E24;
+    --red:#FF8F8B; --red-bg:#35171A;
+    --warn-bg:#3A3110; --warn-line:#8C741A;
+    --term:#060E1B; --term-dim:#7F94B8;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans)}
+h1,h2,h3{font-family:var(--serif);line-height:1.15;letter-spacing:-.01em;margin:0}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.muted{color:var(--ink-2)}
+.small{font-size:14px;margin:0}
+
+/* En-tête */
+.topbar{border-bottom:1px solid var(--line);background:var(--surface)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:700;font-size:21px;color:var(--ink);text-decoration:none}
+.brand-mark{width:28px;height:28px;position:relative;flex:none}
+.brand-mark::before,.brand-mark::after{content:"";position:absolute;width:17px;height:17px;border-radius:5px}
+.brand-mark::before{background:var(--blue);top:0;left:0}
+.brand-mark::after{background:var(--yellow);bottom:0;right:0}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;border:1px solid var(--line);border-radius:999px;font-size:14px;background:var(--surface-2);color:var(--ink-2)}
+.pill .dot{width:9px;height:9px;border-radius:50%;background:var(--ink-2);flex:none}
+.pill[data-state=ready] .dot{background:var(--green)}
+.pill[data-state=loading] .dot{background:var(--yellow);animation:pulse 1.2s ease-in-out infinite}
+.pill[data-state=error] .dot{background:var(--red)}
+.pill:not(:has(button:not([hidden]))){padding-right:12px}
+.linkbtn{font:inherit;font-size:13px;font-weight:600;color:var(--blue);background:transparent;border:1px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer}
+@keyframes pulse{50%{opacity:.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+main.wrap{padding-top:34px;padding-bottom:64px;outline:0}
+.foot{padding-top:18px;padding-bottom:40px;border-top:1px solid var(--line);color:var(--ink-2);font-size:14px}
+.foot p{margin:4px 0}
+
+/* Boutons */
+.btn{font:inherit;font-weight:600;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 16px;cursor:pointer;min-height:42px;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn:hover:not(:disabled){border-color:var(--blue)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--blue-ink)}
+.btn.accent{background:var(--yellow);border-color:var(--yellow);color:var(--yellow-ink)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--red);border-color:var(--red);background:transparent}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.actions .hint{font-size:13px;color:var(--ink-2)}
+
+/* Alertes */
+.alert{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border:1px solid;border-radius:10px;padding:12px 14px;margin:0 0 14px}
+.alert.warn{background:var(--warn-bg);border-color:var(--warn-line)}
+.alert.bad{background:var(--red-bg);border-color:var(--red)}
+.alert.good{background:var(--green-bg);border-color:var(--green)}
+.spin{width:15px;height:15px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:none}
+
+/* Tableau de bord */
+.hero{max-width:720px;padding:6px 0 30px}
+.hero h1{font-size:clamp(32px,5.5vw,50px)}
+.hero p{color:var(--ink-2);font-size:18px;max-width:58ch;margin:14px 0 22px}
+.section-title{font-size:24px;margin:8px 0 14px}
+.mods{display:grid;gap:14px}
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:12px}
+.mod.main{border:2px solid var(--blue)}
+.mod h3{font-size:24px}
+.mod p{margin:0}
+.mod-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.badge{font-size:13px;font-weight:600;border-radius:999px;padding:2px 10px;border:1px solid var(--line);color:var(--ink-2)}
+.main .badge,.badge.ok{border-color:var(--green);color:var(--green)}
+.mod.soon{background:transparent;border-style:dashed;padding:14px 18px;grid-template-columns:1fr auto;align-items:center;color:var(--ink-2)}
+.mod.soon h3{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink-2)}
+.bar{height:10px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--blue);transition:width .3s}
+.reset-zone{margin-top:30px}
+
+/* Module : étapes */
+.crumb{display:inline-block;margin-bottom:16px;font-size:14px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:36px;align-items:start}
+.layout>*{min-width:0}
+.stepper{list-style:none;margin:0;padding:0;position:sticky;top:16px;display:grid;gap:4px}
+.stepper .group{font-size:13px;color:var(--ink-2);padding:10px 12px 2px;font-weight:600}
+.stepper a{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:8px;color:var(--ink);text-decoration:none;font-size:15px;border:1px solid transparent;position:relative}
+.stepper a:hover{background:var(--surface)}
+.stepper a[aria-current=step]{background:var(--surface);border-color:var(--line);font-weight:600}
+.mark{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;line-height:1}
+.stepper a.done .mark{background:var(--green);border-color:var(--green);color:var(--surface)}
+.stepper a[aria-current=step] .mark{border-color:var(--yellow);background:var(--yellow);color:var(--yellow-ink)}
+@media (max-width:860px){
+  .layout{grid-template-columns:minmax(0,1fr);gap:18px}
+  .stepper{position:static;display:flex;overflow-x:auto;gap:6px;padding-bottom:8px}
+  .stepper .group{display:none}
+  .stepper a{white-space:nowrap;border-color:var(--line);background:var(--surface)}
+}
+
+.step h2{font-size:clamp(27px,4.2vw,36px);margin:2px 0 16px}
+.prose{max-width:68ch}
+.prose p,.prose ul,.prose ol{margin:0 0 14px}
+.prose li{margin-bottom:4px}
+.prose code,.brief code{font-family:var(--mono);font-size:.92em;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.prose .scroll{overflow-x:auto;margin:0 0 14px}
+.prose table{border-collapse:collapse;width:100%;font-size:15px}
+.prose th,.prose td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+.prose th{background:var(--surface-2)}
+.brief{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--yellow);border-radius:10px;padding:16px 18px;margin-bottom:16px;max-width:68ch}
+.brief p{margin:0 0 6px}
+.brief ol{margin:6px 0 0;padding-left:22px}
+.try{font-weight:600}
+
+/* Éditeur */
+.editor{display:grid;grid-template-columns:auto minmax(0,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.editor:focus-within{outline:3px solid var(--blue);outline-offset:1px}
+.gutter,.code{font:14px/1.6 var(--mono)}
+.gutter{margin:0;padding:12px 10px 12px 12px;text-align:right;color:var(--ink-2);background:var(--surface-2);border-right:1px solid var(--line);overflow:hidden;user-select:none}
+.code{display:block;width:100%;border:0;resize:none;background:transparent;color:var(--ink);padding:12px 14px;tab-size:4;white-space:pre;overflow-x:auto;overflow-y:hidden;margin:0}
+.code:focus-visible{outline:none}
+
+/* Résultat et variables */
+.io{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;margin:12px 0 16px}
+@media (max-width:860px){.io{grid-template-columns:minmax(0,1fr)}}
+.panel{border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.panel>h3{font:600 14px var(--sans);letter-spacing:0;padding:8px 12px;margin:0;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.panel .body{padding:12px 14px;min-height:96px}
+.console{background:var(--term);color:var(--term-ink);border-color:var(--term)}
+.console>h3{background:transparent;color:var(--term-dim);border-bottom:1px solid rgba(255,255,255,.14)}
+.console .body{font:14px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.console .muted{color:var(--term-dim)}
+.console .err{color:var(--term-err);margin-top:8px}
+.console .err b{font-weight:700}
+.console .why{font-family:var(--sans);white-space:normal;color:var(--term-dim);margin-top:6px}
+.vars .body{display:grid;gap:8px;align-content:start}
+.var{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:baseline;font:14px/1.4 var(--mono)}
+.var .nm{font-weight:700}
+.var .vl{overflow-wrap:anywhere;color:var(--ink-2)}
+.tag{font:600 12px var(--mono);padding:2px 9px;border-radius:999px;border:1px solid var(--blue);color:var(--blue)}
+
+/* Vérification et explications */
+.checks{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:6px;max-width:68ch}
+.checks li{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line)}
+.checks .ok{background:var(--green-bg);border-color:var(--green)}
+.checks .ko{background:var(--red-bg);border-color:var(--red)}
+.checks .ic{font-weight:700;flex:none;width:1.2em;text-align:center}
+.checks .ok .ic{color:var(--green)}
+.checks .ko .ic{color:var(--red)}
+.hintbox{max-width:68ch;margin:0 0 16px;padding:12px 14px;border-radius:10px;border:1px dashed var(--blue)}
+.explain{background:var(--surface);border:1px solid var(--green);border-left-width:6px;border-radius:10px;padding:18px 20px;margin:0 0 16px}
+.explain.open{border-color:var(--line);border-left-color:var(--blue)}
+.explain h3{font-size:22px;margin-bottom:10px}
+.sol{font:14px/1.6 var(--mono);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:6px 0 0;white-space:pre}
+.nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.nav .spacer{flex:1}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#/"><span class="brand-mark" aria-hidden="true"></span>Python Coach</a>
+    <div class="pill" id="py-pill" data-state="idle" role="status" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="py-label">Python : pas encore chargé</span>
+      <button type="button" class="linkbtn" id="py-retry" hidden>Réessayer</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="app" tabindex="-1">
+  <noscript><p>Python Coach a besoin de JavaScript pour fonctionner. Active JavaScript dans ton navigateur puis recharge la page.</p></noscript>
+</main>
+
+<footer class="wrap foot">
+  <p>Python Coach, version 1. Ton code est exécuté par un vrai interpréteur Python (Pyodide) dans ton navigateur : rien n'est envoyé à un serveur.</p>
+  <p id="storage-note">Ta progression est enregistrée sur cet appareil, dans ce navigateur.</p>
+</footer>
+
+<script>
+(function () {
+'use strict';
+
+/* =====================================================================
+   1. DONNÉES PÉDAGOGIQUES (module 1)
+   ===================================================================== */
+// <DATA>
+const MODULES = [
+  {
+    id: 'm1',
+    title: 'Variables et types de base',
+    summary: 'Stocker une valeur dans une variable, reconnaître les types int, float, str et bool, et afficher des résultats avec print().',
+    available: true,
+    doneText: 'Tu sais créer des variables, reconnaître les types de base et afficher des résultats avec print().',
+    steps: [
+      {
+        id: 'l1', kind: 'lesson', title: 'Les variables',
+        html: `
+<p>Une <strong>variable</strong> est un nom qui désigne une valeur gardée en mémoire. Imagine une étiquette collée sur une boîte : l'étiquette est le nom, la boîte contient la valeur.</p>
+<p>On crée une variable avec le signe <code>=</code> :</p>
+<ul>
+  <li>Le nom se met à gauche, la valeur à droite : <code>age = 25</code>.</li>
+  <li>Un nom contient des lettres, des chiffres et le caractère <code>_</code>. Il ne contient pas d'espace et ne commence pas par un chiffre.</li>
+  <li>Les majuscules comptent : <code>Age</code> et <code>age</code> sont deux variables différentes.</li>
+  <li>Une variable peut changer de valeur. <code>compteur = compteur + 1</code> lit l'ancienne valeur, ajoute 1, puis range le résultat dans la même variable.</li>
+</ul>
+<p class="try">À toi : exécute l'exemple, puis change les valeurs et exécute-le à nouveau.</p>`,
+        example: `compteur = 1
+print(compteur)
+
+compteur = compteur + 1
+print(compteur)
+`
+      },
+      {
+        id: 'l2', kind: 'lesson', title: 'Les types de base',
+        html: `
+<p>Chaque valeur a un <strong>type</strong>, qui indique ce qu'elle représente et ce qu'on peut en faire. Il y en a quatre à connaître pour commencer :</p>
+<div class="scroll"><table>
+  <thead><tr><th>Type</th><th>Ce qu'il représente</th><th>Exemples</th></tr></thead>
+  <tbody>
+    <tr><td><code>int</code></td><td>un nombre entier</td><td><code>42</code>, <code>-3</code></td></tr>
+    <tr><td><code>float</code></td><td>un nombre décimal (avec un point)</td><td><code>3.14</code>, <code>12.5</code></td></tr>
+    <tr><td><code>str</code></td><td>un texte, entre guillemets</td><td><code>"Bonjour"</code>, <code>'42'</code></td></tr>
+    <tr><td><code>bool</code></td><td>vrai ou faux</td><td><code>True</code>, <code>False</code></td></tr>
+  </tbody>
+</table></div>
+<p>La fonction <code>type()</code> te donne le type d'une valeur. Attention : <code>42</code> est un nombre, mais <code>"42"</code> est un texte, car il est entre guillemets.</p>
+<p class="try">À toi : exécute l'exemple, puis ajoute une ligne pour afficher le type de <code>"Bonjour"</code>.</p>`,
+        example: `print(type(42))
+print(type(3.14))
+print(type("42"))
+print(type(True))
+`
+      },
+      {
+        id: 'l3', kind: 'lesson', title: 'Afficher avec print()',
+        html: `
+<p><code>print()</code> affiche une valeur à l'écran. C'est ton outil principal pour voir ce que fait ton programme.</p>
+<ul>
+  <li>Tu peux afficher plusieurs valeurs en les séparant par des virgules. Python les sépare par un espace : <code>print("Tu as", age, "ans")</code>.</li>
+  <li>Le signe <code>+</code> colle des textes entre eux, mais il ne mélange pas un texte et un nombre.</li>
+  <li>Une ligne qui commence par <code>#</code> est un commentaire : Python l'ignore. Elle sert à t'expliquer le code.</li>
+</ul>
+<p class="try">À toi : remplace les virgules par des <code>+</code> dans le deuxième <code>print()</code> et lis le message d'erreur. Comprendre les erreurs fait partie de l'apprentissage.</p>`,
+        example: `prenom = "Awa"
+age = 25
+
+# Les virgules acceptent tous les types
+print("Bonjour", prenom)
+print("Tu as", age, "ans")
+`
+      },
+      {
+        id: 'ex1', kind: 'exercise', title: 'Ta première variable',
+        brief: `
+<p>Crée une variable et affiche un message de bienvenue.</p>
+<ol>
+  <li>Crée une variable <code>prenom</code> qui contient ton prénom (entre guillemets).</li>
+  <li>Avec <code>print()</code>, affiche le mot <code>Bonjour</code> suivi de ton prénom.</li>
+</ol>`,
+        hint: `Un texte s'écrit entre guillemets : <code>prenom = "Awa"</code>. Dans <code>print()</code>, sépare les valeurs par une virgule.`,
+        starter: `# Exercice 1 : ta première variable
+# 1. Crée la variable prenom
+# 2. Affiche "Bonjour" suivi de ton prénom
+
+`,
+        checks: [
+          { label: 'La variable prenom existe et contient un texte',
+            test: (r) => !!r.variables.prenom && r.variables.prenom.type === 'str' },
+          { label: 'prenom n\'est pas vide',
+            test: (r) => !!r.variables.prenom && r.variables.prenom.type === 'str' && String(r.variables.prenom.value || '').trim().length > 0 },
+          { label: 'Le programme affiche « Bonjour » suivi de ton prénom',
+            test: (r) => {
+              const p = r.variables.prenom;
+              if (!p || p.type !== 'str' || !p.value || !p.value.trim()) return false;
+              const out = r.stdout.toLowerCase();
+              return out.includes('bonjour') && out.includes(p.value.trim().toLowerCase());
+            } }
+        ],
+        solution: `prenom = "Awa"
+print("Bonjour", prenom)`,
+        explanation: `
+<p><code>prenom = "Awa"</code> crée une variable de type <code>str</code> (un texte). Les guillemets sont indispensables : sans eux, Python chercherait une variable nommée <code>Awa</code> et afficherait une <code>NameError</code>.</p>
+<p><code>print("Bonjour", prenom)</code> affiche deux valeurs séparées par un espace. Le mot <code>"Bonjour"</code> est écrit entre guillemets, car c'est un texte. <code>prenom</code> est écrit sans guillemets, car c'est le nom de la variable : Python va chercher sa valeur.</p>
+<p>À retenir : <strong>avec des guillemets, c'est un texte ; sans guillemets, c'est un nom de variable</strong>.</p>`
+      },
+      {
+        id: 'ex2', kind: 'exercise', title: 'Reconnaître les types',
+        brief: `
+<p>Crée trois variables de types différents, puis demande à Python le type de chacune.</p>
+<ol>
+  <li><code>age</code> : un nombre entier.</li>
+  <li><code>taille</code> : un nombre décimal (une taille en mètres, par exemple).</li>
+  <li><code>est_etudiant</code> : un booléen (<code>True</code> ou <code>False</code>).</li>
+  <li>Affiche le type de chaque variable avec <code>print(type(...))</code>.</li>
+</ol>`,
+        hint: `Un décimal s'écrit avec un point : <code>1.75</code>. Un booléen s'écrit <code>True</code> ou <code>False</code>, avec une majuscule et sans guillemets. Pour afficher un type : <code>print(type(age))</code>.`,
+        starter: `# Exercice 2 : reconnaître les types
+# 1. Crée age (entier), taille (décimal) et est_etudiant (booléen)
+# 2. Affiche le type de chacune avec print(type(...))
+
+`,
+        checks: [
+          { label: 'age est un nombre entier (int)',
+            test: (r) => !!r.variables.age && r.variables.age.type === 'int' },
+          { label: 'taille est un nombre décimal (float)',
+            test: (r) => !!r.variables.taille && r.variables.taille.type === 'float' },
+          { label: 'est_etudiant est un booléen (bool)',
+            test: (r) => !!r.variables.est_etudiant && r.variables.est_etudiant.type === 'bool' },
+          { label: 'Le programme affiche les trois types',
+            test: (r) => r.stdout.includes("<class 'int'>") && r.stdout.includes("<class 'float'>") && r.stdout.includes("<class 'bool'>") },
+          { label: 'Tu utilises la fonction type()',
+            test: (r, code) => /\btype\s*\(/.test(code) }
+        ],
+        solution: `age = 25
+taille = 1.75
+est_etudiant = True
+
+print(type(age))
+print(type(taille))
+print(type(est_etudiant))`,
+        explanation: `
+<p>Python déduit le type de chaque variable à partir de la valeur écrite : <code>25</code> est un <code>int</code>, <code>1.75</code> est un <code>float</code>, et <code>True</code> est un <code>bool</code>.</p>
+<p><code>type()</code> renvoie le type d'une valeur. Python l'affiche sous la forme <code>&lt;class 'int'&gt;</code> : « class » signifie simplement que <code>int</code> est le nom du type.</p>
+<p>Deux pièges fréquents : <code>"25"</code> (entre guillemets) est un texte, pas un entier. Et en Python, un décimal s'écrit avec un <strong>point</strong> (<code>1.75</code>), pas avec une virgule.</p>`
+      },
+      {
+        id: 'ex3', kind: 'exercise', title: 'Calculer un total',
+        brief: `
+<p>Un client achète plusieurs articles au même prix. Les variables <code>prix</code> et <code>quantite</code> existent déjà dans le code de départ.</p>
+<ol>
+  <li>Crée une variable <code>total</code> calculée à partir de <code>prix</code> et <code>quantite</code> (multiplication avec <code>*</code>).</li>
+  <li>Affiche exactement : <code>Total : 50.0</code></li>
+</ol>`,
+        hint: `Écris <code>total = prix * quantite</code>, puis <code>print("Total :", total)</code>. Python met un espace entre les valeurs séparées par une virgule.`,
+        starter: `# Exercice 3 : calculer un total
+prix = 12.5
+quantite = 4
+
+# 1. Calcule total à partir de prix et quantite
+# 2. Affiche : Total : 50.0
+
+`,
+        checks: [
+          { label: 'total vaut 50.0 et c\'est un nombre décimal (float)',
+            test: (r) => !!r.variables.total && r.variables.total.type === 'float' && r.variables.total.value === 50 },
+          { label: 'total est calculé à partir de prix et quantite (pas écrit à la main)',
+            test: (r, code) => code.split('\n').some((l) => /^\s*total\s*=/.test(l) && /\bprix\b/.test(l) && /\bquantite\b/.test(l)) },
+          { label: 'Le programme affiche exactement « Total : 50.0 »',
+            test: (r) => {
+              const lines = r.stdout.trim().split('\n');
+              return lines[lines.length - 1].trim() === 'Total : 50.0';
+            } }
+        ],
+        solution: `prix = 12.5
+quantite = 4
+
+total = prix * quantite
+print("Total :", total)`,
+        explanation: `
+<p><code>prix * quantite</code> est une <strong>expression</strong> : Python la calcule, puis <code>total =</code> range le résultat dans une nouvelle variable. L'intérêt des variables apparaît ici : si tu changes <code>prix</code> ou <code>quantite</code>, <code>total</code> se met à jour sans que tu aies à refaire le calcul à la main.</p>
+<p>Le résultat est <code>50.0</code> et non <code>50</code> : multiplier un <code>float</code> (<code>12.5</code>) par un <code>int</code> (<code>4</code>) donne toujours un <code>float</code>.</p>
+<p><code>print("Total :", total)</code> mélange un texte et un nombre grâce à la virgule. Avec un <code>+</code>, tu aurais obtenu une <code>TypeError</code>, comme dans la leçon sur <code>print()</code>.</p>`
+      }
+    ]
+  },
+  {
+    id: 'm2',
+    title: 'Les conditions',
+    summary: 'Comparer des valeurs, puis faire choisir un chemin à ton programme avec if, elif et else, et combiner des conditions avec and, or et not.',
+    available: true,
+    doneText: 'Tu sais comparer des valeurs, écrire des if / elif / else et combiner des conditions avec and, or et not.',
+    steps: [
+      {
+        id: 'c-l1', kind: 'lesson', title: 'Comparer des valeurs',
+        html: `
+<p>Une <strong>comparaison</strong> pose une question à Python. La réponse est toujours un booléen : <code>True</code> (vrai) ou <code>False</code> (faux).</p>
+<div class="scroll"><table>
+  <thead><tr><th>Opérateur</th><th>Question posée</th><th>Exemple</th></tr></thead>
+  <tbody>
+    <tr><td><code>==</code></td><td>est égal à ?</td><td><code>age == 18</code></td></tr>
+    <tr><td><code>!=</code></td><td>est différent de ?</td><td><code>age != 18</code></td></tr>
+    <tr><td><code>&lt;</code> et <code>&gt;</code></td><td>est plus petit / plus grand que ?</td><td><code>age &lt; 18</code></td></tr>
+    <tr><td><code>&lt;=</code> et <code>&gt;=</code></td><td>est plus petit ou égal / plus grand ou égal ?</td><td><code>age &gt;= 18</code></td></tr>
+  </tbody>
+</table></div>
+<p>Attention à ne pas confondre : <code>=</code> <strong>range</strong> une valeur dans une variable, alors que <code>==</code> <strong>compare</strong> deux valeurs. Les textes se comparent aussi, mais les majuscules comptent : <code>"python" == "Python"</code> est faux.</p>
+<p class="try">À toi : exécute l'exemple, puis change <code>age</code> et devine chaque résultat avant d'exécuter.</p>`,
+        example: `age = 17
+print(age >= 18)
+print(age == 17)
+print(age != 17)
+print("python" == "Python")
+`
+      },
+      {
+        id: 'c-l2', kind: 'lesson', title: 'if, elif et else',
+        html: `
+<p>Avec <code>if</code>, ton programme choisit quoi faire selon une condition.</p>
+<ul>
+  <li><code>if condition:</code> exécute le bloc qui suit <strong>seulement si</strong> la condition est vraie.</li>
+  <li><code>elif condition:</code> (« sinon si ») teste une autre condition, si les précédentes étaient fausses.</li>
+  <li><code>else:</code> (« sinon ») couvre tous les autres cas. Il est facultatif et n'a pas de condition.</li>
+</ul>
+<p>Deux règles à respecter : la ligne se termine par deux-points <code>:</code>, et le bloc qui suit est <strong>indenté</strong> (décalé de 4 espaces). Python teste les conditions dans l'ordre et s'arrête à la première qui est vraie.</p>
+<p class="try">À toi : exécute avec <code>note = 14</code>, puis essaie 18, 10 et 9 pour voir chaque branche.</p>`,
+        example: `note = 14
+
+if note >= 16:
+    print("Très bien")
+elif note >= 10:
+    print("Admis")
+else:
+    print("Insuffisant")
+`
+      },
+      {
+        id: 'c-l3', kind: 'lesson', title: 'Combiner avec and, or, not',
+        html: `
+<p>Pour tester plusieurs choses à la fois, on combine des conditions :</p>
+<ul>
+  <li><code>and</code> : vrai si les <strong>deux</strong> conditions sont vraies.</li>
+  <li><code>or</code> : vrai si <strong>au moins une</strong> des deux est vraie.</li>
+  <li><code>not</code> : <strong>inverse</strong> le résultat (<code>not True</code> donne <code>False</code>).</li>
+</ul>
+<p>Une variable déjà booléenne s'utilise directement : écris <code>if a_un_permis:</code> plutôt que <code>if a_un_permis == True:</code>.</p>
+<p class="try">À toi : change les deux valeurs de départ (<code>True</code> / <code>False</code>) et observe quelle branche s'exécute.</p>`,
+        example: `a_un_permis = True
+a_une_voiture = False
+
+if a_un_permis and a_une_voiture:
+    print("Tu peux conduire ta voiture")
+elif a_un_permis or a_une_voiture:
+    print("Il manque une des deux conditions")
+else:
+    print("Tu n'as ni permis ni voiture")
+
+print(not a_un_permis)
+`
+      },
+      {
+        id: 'c-ex1', kind: 'exercise', title: 'Majeur ou mineur',
+        brief: `
+<p>Écris un programme qui dit si une personne est majeure (18 ans ou plus).</p>
+<ol>
+  <li>Garde la ligne <code>age = 20</code> au début, sans la décaler.</li>
+  <li>Affiche <code>Majeur</code> si <code>age</code> est au moins 18, sinon <code>Mineur</code>.</li>
+</ol>
+<p class="small muted">Pour vérifier ton programme, l'application change la valeur de <code>age</code> et relance ton code plusieurs fois, y compris pour des cas limites.</p>`,
+        hint: `Utilise <code>if age &gt;= 18:</code> puis un <code>else:</code>, chacun suivi d'un bloc indenté de 4 espaces avec un <code>print()</code>. Le texte affiché doit être exactement <code>Majeur</code> ou <code>Mineur</code>.`,
+        starter: `# Exercice 1 : majeur ou mineur
+age = 20
+
+# Affiche "Majeur" si age est au moins 18, sinon "Mineur"
+
+`,
+        checks: [
+          { label: 'Tu utilises if', test: (r, code) => /^\s*if\b/m.test(code) }
+        ],
+        cases: [
+          { set: { age: 20 }, out: 'Majeur' },
+          { set: { age: 18 }, out: 'Majeur' },
+          { set: { age: 17 }, out: 'Mineur' },
+          { set: { age: 0 }, out: 'Mineur' }
+        ],
+        solution: `age = 20
+
+if age >= 18:
+    print("Majeur")
+else:
+    print("Mineur")`,
+        explanation: `
+<p><code>age &gt;= 18</code> est une condition : Python la transforme en <code>True</code> ou <code>False</code>. Si c'est vrai, le bloc du <code>if</code> s'exécute ; sinon, c'est celui du <code>else</code>.</p>
+<p>Le cas limite 18 est important : avec <code>&gt;</code> au lieu de <code>&gt;=</code>, une personne de 18 ans serait déclarée mineure. Tester les valeurs aux frontières est un réflexe de programmeur.</p>
+<p>N'oublie pas les deux-points et l'indentation : ce sont eux qui disent à Python quelles lignes appartiennent à quel bloc.</p>`
+      },
+      {
+        id: 'c-ex2', kind: 'exercise', title: 'La mention d\'une note',
+        brief: `
+<p>Affiche la mention correspondant à une note sur 20.</p>
+<ol>
+  <li>Garde la ligne <code>note = 14</code> au début, sans la décaler.</li>
+  <li>Moins de 10 : affiche <code>Insuffisant</code>.</li>
+  <li>De 10 à 13 inclus : affiche <code>Passable</code>.</li>
+  <li>14 ou plus : affiche <code>Bien</code>.</li>
+</ol>
+<p class="small muted">Ton programme sera relancé avec plusieurs notes, dont les valeurs limites 9, 10, 13 et 14.</p>`,
+        hint: `Utilise un <code>if</code>, un <code>elif</code> et un <code>else</code>. Python s'arrête à la première condition vraie : si <code>note &lt; 10</code> est faux, tu sais déjà que la note est au moins 10.`,
+        starter: `# Exercice 2 : la mention d'une note
+note = 14
+
+# Insuffisant (moins de 10), Passable (10 à 13), Bien (14 ou plus)
+
+`,
+        checks: [
+          { label: 'Tu utilises if et elif', test: (r, code) => /^\s*if\b/m.test(code) && /^\s*elif\b/m.test(code) }
+        ],
+        cases: [
+          { set: { note: 5 }, out: 'Insuffisant' },
+          { set: { note: 9 }, out: 'Insuffisant' },
+          { set: { note: 10 }, out: 'Passable' },
+          { set: { note: 13 }, out: 'Passable' },
+          { set: { note: 14 }, out: 'Bien' },
+          { set: { note: 20 }, out: 'Bien' }
+        ],
+        solution: `note = 14
+
+if note < 10:
+    print("Insuffisant")
+elif note < 14:
+    print("Passable")
+else:
+    print("Bien")`,
+        explanation: `
+<p>Python lit les branches de haut en bas et exécute la <strong>première</strong> dont la condition est vraie, puis ignore les autres. C'est pourquoi <code>elif note &lt; 14</code> suffit pour « de 10 à 13 » : on n'arrive à ce test que si <code>note &lt; 10</code> était faux.</p>
+<p>Piège fréquent : écrire trois <code>if</code> séparés au lieu de <code>if</code> / <code>elif</code> / <code>else</code>. Chaque <code>if</code> est alors testé indépendamment, et plusieurs messages peuvent s'afficher.</p>
+<p>L'ordre des conditions compte : les écrire dans le désordre donne souvent un mauvais résultat sans aucune erreur.</p>`
+      },
+      {
+        id: 'c-ex3', kind: 'exercise', title: 'L\'entrée au concert',
+        brief: `
+<p>Un concert est réservé aux personnes de 16 ans ou plus qui possèdent un billet.</p>
+<ol>
+  <li>Garde les deux lignes <code>age = 20</code> et <code>a_billet = True</code> au début, sans les décaler.</li>
+  <li>Affiche <code>Entrée autorisée</code> si les deux conditions sont réunies, sinon <code>Entrée refusée</code>.</li>
+</ol>
+<p class="small muted">Ton programme sera relancé avec plusieurs combinaisons d'âge et de billet.</p>`,
+        hint: `Combine les deux conditions avec <code>and</code> : <code>if age &gt;= 16 and a_billet:</code>. Comme <code>a_billet</code> est déjà un booléen, pas besoin de <code>== True</code>.`,
+        starter: `# Exercice 3 : l'entrée au concert
+age = 20
+a_billet = True
+
+# Entrée autorisée si age >= 16 ET billet, sinon Entrée refusée
+
+`,
+        checks: [
+          { label: 'Tu utilises and', test: (r, code) => /\band\b/.test(code) }
+        ],
+        cases: [
+          { set: { age: 20, a_billet: true }, out: 'Entrée autorisée' },
+          { set: { age: 16, a_billet: true }, out: 'Entrée autorisée' },
+          { set: { age: 15, a_billet: true }, out: 'Entrée refusée' },
+          { set: { age: 20, a_billet: false }, out: 'Entrée refusée' },
+          { set: { age: 10, a_billet: false }, out: 'Entrée refusée' }
+        ],
+        solution: `age = 20
+a_billet = True
+
+if age >= 16 and a_billet:
+    print("Entrée autorisée")
+else:
+    print("Entrée refusée")`,
+        explanation: `
+<p><code>and</code> exige que <strong>les deux</strong> conditions soient vraies : l'âge ET le billet. Il suffit qu'une seule soit fausse pour que Python passe au <code>else</code>. Avec <code>or</code>, une seule condition vraie aurait suffi, ce qui n'est pas la règle voulue ici.</p>
+<p><code>a_billet</code> contient déjà <code>True</code> ou <code>False</code> : on peut l'utiliser seul dans la condition. Écrire <code>a_billet == True</code> fonctionne, mais c'est une lourdeur à éviter.</p>
+<p>Les cas testés couvrent les quatre combinaisons possibles (âge suffisant ou non, billet ou non), ainsi que la limite de 16 ans.</p>`
+      }
+    ]
+  },
+  {
+    id: 'm3',
+    title: 'Les boucles',
+    summary: 'Répéter des instructions avec for et while, utiliser range(), puis accumuler, compter et filtrer des résultats.',
+    available: true,
+    doneText: 'Tu sais répéter des instructions avec for et while, utiliser range(), et accumuler ou compter des résultats dans une boucle.',
+    steps: [
+      {
+        id: 'b-l1', kind: 'lesson', title: 'La boucle for et range()',
+        html: `
+<p>Une <strong>boucle</strong> répète des instructions. Avec <code>for</code>, on répète un bloc un nombre de fois connu à l'avance :</p>
+<ul>
+  <li><code>for i in range(5):</code> répète 5 fois, avec <code>i</code> qui vaut 0, 1, 2, 3 puis 4.</li>
+  <li><code>range(1, 6)</code> commence à 1 et s'arrête <strong>avant</strong> 6 : on obtient 1, 2, 3, 4, 5.</li>
+  <li><code>range(0, 10, 2)</code> avance de 2 en 2 : 0, 2, 4, 6, 8.</li>
+</ul>
+<p>Comme pour <code>if</code>, la ligne se termine par <code>:</code> et le bloc répété est <strong>indenté</strong>. La première ligne non indentée après le bloc s'exécute une seule fois, à la fin. Un texte peut aussi être parcouru lettre par lettre.</p>
+<p class="try">À toi : exécute l'exemple, puis remplace <code>range(1, 6)</code> par <code>range(3)</code> et par <code>range(0, 10, 2)</code>.</p>`,
+        example: `for i in range(1, 6):
+    print("Tour numéro", i)
+
+print("Fin de la boucle")
+
+for lettre in "Bénin":
+    print(lettre)
+`
+      },
+      {
+        id: 'b-l2', kind: 'lesson', title: 'La boucle while',
+        html: `
+<p><code>while condition:</code> répète le bloc <strong>tant que</strong> la condition est vraie. On l'utilise quand on ne sait pas à l'avance combien de tours seront nécessaires.</p>
+<p>Python teste la condition avant chaque tour. Pour que la boucle finisse, quelque chose dans le bloc doit <strong>faire changer</strong> la variable de la condition. Sinon, la condition reste vraie pour toujours : c'est une <strong>boucle infinie</strong>.</p>
+<p>Python Coach arrête un programme qui tourne depuis trop longtemps (quelques secondes) et t'affiche une erreur « Timeout » à la place de figer ta page.</p>
+<p class="try">À toi : exécute l'exemple. Ensuite, supprime la ligne <code>valeur = valeur * 2</code> et exécute à nouveau pour voir la boucle infinie être arrêtée.</p>`,
+        example: `valeur = 1
+
+while valeur < 100:
+    print(valeur)
+    valeur = valeur * 2
+
+print("Fini :", valeur)
+`
+      },
+      {
+        id: 'b-l3', kind: 'lesson', title: 'Accumuler, compter, filtrer',
+        html: `
+<p>Les boucles servent souvent à construire un résultat petit à petit :</p>
+<ul>
+  <li>Un <strong>accumulateur</strong> est une variable créée <em>avant</em> la boucle (par exemple <code>total = 0</code>) qu'on met à jour à chaque tour : <code>total += i</code> est un raccourci de <code>total = total + i</code>.</li>
+  <li>Un <strong>compteur</strong> fonctionne pareil, mais on ajoute 1 seulement quand une condition est vraie : on met un <code>if</code> dans la boucle.</li>
+  <li>L'opérateur <code>%</code> donne le <strong>reste</strong> d'une division : <code>7 % 2</code> vaut 1. Un nombre <code>i</code> est pair si <code>i % 2 == 0</code>.</li>
+</ul>
+<p>Le résultat s'affiche <strong>après</strong> la boucle, avec un <code>print()</code> non indenté.</p>
+<p class="try">À toi : exécute l'exemple, puis change <code>range(1, 11)</code> en <code>range(1, 21)</code> et devine les résultats avant d'exécuter.</p>`,
+        example: `total = 0
+pairs = 0
+
+for i in range(1, 11):
+    total += i
+    if i % 2 == 0:
+        pairs += 1
+
+print("Somme :", total)
+print("Nombres pairs :", pairs)
+`
+      },
+      {
+        id: 'b-ex1', kind: 'exercise', title: 'Table de multiplication',
+        brief: `
+<p>Affiche la table de multiplication d'un nombre.</p>
+<ol>
+  <li>Garde la ligne <code>n = 7</code> au début, sans la décaler.</li>
+  <li>Avec une boucle <code>for</code>, affiche les 10 lignes de la table, une par ligne, sous cette forme : <code>7 x 1 = 7</code>, <code>7 x 2 = 14</code>… jusqu'à <code>7 x 10 = 70</code>.</li>
+</ol>
+<p class="small muted">Ton programme sera relancé avec d'autres valeurs de <code>n</code> : la table doit s'adapter.</p>`,
+        hint: `Utilise <code>for i in range(1, 11):</code> (11 est exclu). Dans la boucle : <code>print(n, "x", i, "=", n * i)</code>. Les virgules mettent un espace entre les valeurs.`,
+        starter: `# Exercice 1 : table de multiplication
+n = 7
+
+# Affiche : 7 x 1 = 7, 7 x 2 = 14, ... jusqu'à 7 x 10 = 70
+
+`,
+        checks: [
+          { label: 'Tu utilises une boucle for', test: (r, code) => /^\s*for\b/m.test(code) }
+        ],
+        cases: [
+          { set: { n: 7 }, lines: tableLines(7), desc: 'affiche la table de 7 (10 lignes)' },
+          { set: { n: 3 }, lines: tableLines(3), desc: 'affiche la table de 3 (10 lignes)' },
+          { set: { n: 10 }, lines: tableLines(10), desc: 'affiche la table de 10 (10 lignes)' }
+        ],
+        solution: `n = 7
+
+for i in range(1, 11):
+    print(n, "x", i, "=", n * i)`,
+        explanation: `
+<p><code>range(1, 11)</code> produit les nombres de 1 à 10 : le deuxième nombre est toujours <strong>exclu</strong>. À chaque tour, <code>i</code> prend la valeur suivante et Python exécute le bloc indenté.</p>
+<p>L'expression <code>n * i</code> est recalculée à chaque tour, d'où une ligne différente à chaque fois. Si tu changes <code>n</code>, toute la table change : c'est l'intérêt de la boucle par rapport à dix <code>print()</code> écrits à la main.</p>
+<p>Erreur fréquente : écrire <code>range(1, 10)</code> et oublier la dernière ligne. Pense toujours que la borne de fin n'est pas atteinte.</p>`
+      },
+      {
+        id: 'b-ex2', kind: 'exercise', title: 'Compte à rebours',
+        brief: `
+<p>Affiche un compte à rebours avec une boucle <code>while</code>.</p>
+<ol>
+  <li>Garde la ligne <code>depart = 5</code> au début, sans la décaler.</li>
+  <li>Affiche les nombres de <code>depart</code> jusqu'à 1, un par ligne.</li>
+  <li>Une fois la boucle terminée, affiche <code>Décollage !</code></li>
+</ol>
+<p class="small muted">Ton programme sera relancé avec d'autres valeurs de <code>depart</code>, y compris 0.</p>`,
+        hint: `Tant que <code>depart &gt; 0</code> : affiche <code>depart</code>, puis diminue-le avec <code>depart = depart - 1</code>. Le message <code>Décollage !</code> n'est pas indenté : il s'affiche une seule fois, après la boucle.`,
+        starter: `# Exercice 2 : compte à rebours
+depart = 5
+
+# Affiche 5, 4, 3, 2, 1 puis : Décollage !
+
+`,
+        checks: [
+          { label: 'Tu utilises une boucle while', test: (r, code) => /^\s*while\b/m.test(code) }
+        ],
+        cases: [
+          { set: { depart: 5 }, lines: countdownLines(5), desc: 'affiche 5, 4, 3, 2, 1 puis « Décollage ! »' },
+          { set: { depart: 1 }, lines: countdownLines(1), desc: 'affiche 1 puis « Décollage ! »' },
+          { set: { depart: 3 }, lines: countdownLines(3), desc: 'affiche 3, 2, 1 puis « Décollage ! »' },
+          { set: { depart: 0 }, lines: countdownLines(0), desc: 'affiche seulement « Décollage ! »' }
+        ],
+        solution: `depart = 5
+
+while depart > 0:
+    print(depart)
+    depart = depart - 1
+
+print("Décollage !")`,
+        explanation: `
+<p>Python teste <code>depart &gt; 0</code> avant chaque tour. Dans le bloc, <code>depart = depart - 1</code> fait baisser la valeur : c'est ce qui finit par rendre la condition fausse et arrêter la boucle. Sans cette ligne, <code>depart</code> resterait à 5 pour toujours : boucle infinie.</p>
+<p>Avec <code>depart = 0</code>, la condition est fausse dès le départ : le bloc ne s'exécute <strong>aucune fois</strong>, et seul le message final s'affiche. Une boucle <code>while</code> peut donc faire zéro tour.</p>
+<p><code>print("Décollage !")</code> n'est pas indenté, donc il n'appartient pas à la boucle : il s'exécute une seule fois, quand elle est terminée.</p>`
+      },
+      {
+        id: 'b-ex3', kind: 'exercise', title: 'Compter les multiples de 3',
+        brief: `
+<p>Compte combien de nombres entre 1 et <code>n</code> (inclus) sont des multiples de 3.</p>
+<ol>
+  <li>Garde la ligne <code>n = 20</code> au début, sans la décaler.</li>
+  <li>Avec une boucle et un compteur, compte les multiples de 3 de 1 à <code>n</code>.</li>
+  <li>Affiche exactement : <code>Multiples de 3 : 6</code> (pour <code>n = 20</code>).</li>
+</ol>
+<p class="small muted">Un nombre <code>i</code> est un multiple de 3 si <code>i % 3 == 0</code>. Ton programme sera relancé avec d'autres valeurs de <code>n</code>.</p>`,
+        hint: `Crée <code>compteur = 0</code> avant la boucle. Dans <code>for i in range(1, n + 1):</code>, ajoute un <code>if i % 3 == 0:</code> qui fait <code>compteur += 1</code>. Affiche le résultat après la boucle.`,
+        starter: `# Exercice 3 : compter les multiples de 3
+n = 20
+
+# Affiche : Multiples de 3 : 6
+
+`,
+        checks: [
+          { label: 'Tu utilises une boucle (for ou while)', test: (r, code) => /^\s*(for|while)\b/m.test(code) }
+        ],
+        cases: [
+          { set: { n: 20 }, out: 'Multiples de 3 : 6' },
+          { set: { n: 2 }, out: 'Multiples de 3 : 0' },
+          { set: { n: 9 }, out: 'Multiples de 3 : 3' },
+          { set: { n: 3 }, out: 'Multiples de 3 : 1' },
+          { set: { n: 30 }, out: 'Multiples de 3 : 10' }
+        ],
+        solution: `n = 20
+compteur = 0
+
+for i in range(1, n + 1):
+    if i % 3 == 0:
+        compteur += 1
+
+print("Multiples de 3 :", compteur)`,
+        explanation: `
+<p>Ce programme combine tout le module : un <strong>compteur</strong> créé avant la boucle, un <code>for</code> qui parcourt les nombres, un <code>if</code> qui filtre, et un <code>print()</code> non indenté après la boucle.</p>
+<p><code>range(1, n + 1)</code> inclut bien <code>n</code>, car la borne de fin est exclue : c'est le piège à connaître avec <code>n = 3</code>, où l'on doit compter 1 multiple. <code>i % 3 == 0</code> teste si le reste de la division par 3 est nul.</p>
+<p>Si tu avais écrit <code>compteur = 0</code> <em>dans</em> la boucle, il serait remis à zéro à chaque tour et le résultat serait faux : un accumulateur se crée toujours avant.</p>`
+      }
+    ]
+  },
+  {
+    id: 'm4',
+    title: 'Les fonctions',
+    summary: 'Regrouper du code réutilisable dans une fonction avec def, lui passer des paramètres (même par défaut) et renvoyer un résultat avec return.',
+    available: true,
+    doneText: 'Tu sais définir des fonctions avec def, utiliser des paramètres (y compris par défaut) et renvoyer un résultat avec return.',
+    steps: [
+      {
+        id: 'f-l1', kind: 'lesson', title: 'Définir et appeler une fonction',
+        html: `
+<p>Une <strong>fonction</strong> est un bloc de code qui porte un nom et qu'on peut réutiliser autant de fois qu'on veut. Tu en connais déjà : <code>print()</code> et <code>type()</code>. Tu peux maintenant créer les tiennes.</p>
+<ul>
+  <li>On <strong>définit</strong> une fonction avec <code>def nom(parametre):</code>, suivi d'un bloc indenté. Définir une fonction ne l'exécute pas.</li>
+  <li>On l'<strong>appelle</strong> en écrivant son nom avec des parenthèses : <code>saluer("Awa")</code>. Là, le bloc s'exécute.</li>
+  <li>Le <strong>paramètre</strong> (<code>prenom</code>) est le nom utilisé dans la fonction. L'<strong>argument</strong> (<code>"Awa"</code>) est la valeur donnée à l'appel.</li>
+</ul>
+<p>Une fonction doit être définie <strong>avant</strong> d'être appelée.</p>
+<p class="try">À toi : ajoute un quatrième appel avec ton prénom. Ensuite, supprime les deux lignes de la définition (<code>def</code> et son bloc) pour voir l'erreur.</p>`,
+        example: `def saluer(prenom):
+    print("Bonjour", prenom)
+
+saluer("Awa")
+saluer("Koffi")
+saluer("Fatou")
+`
+      },
+      {
+        id: 'f-l2', kind: 'lesson', title: 'return : renvoyer un résultat',
+        html: `
+<p><code>print()</code> <strong>affiche</strong> une valeur à l'écran, mais ne la garde pas. <code>return</code> <strong>renvoie</strong> une valeur à l'endroit où la fonction a été appelée : on peut alors la stocker dans une variable ou l'utiliser dans un calcul.</p>
+<ul>
+  <li>Dès que Python rencontre <code>return</code>, la fonction s'arrête et renvoie la valeur.</li>
+  <li>Une fonction sans <code>return</code> renvoie <code>None</code>, la valeur « rien » de Python.</li>
+  <li>Les variables créées dans une fonction sont <strong>locales</strong> : elles n'existent que pendant l'appel.</li>
+</ul>
+<p class="try">À toi : exécute l'exemple et compare <code>carre</code> et <code>sans_retour</code>. Pourquoi la dernière ligne affiche-t-elle <code>None</code> ?</p>`,
+        example: `def carre(x):
+    return x * x
+
+resultat = carre(6)
+print(resultat)
+print(carre(3) + carre(4))
+
+def sans_retour(x):
+    print(x * x)
+
+valeur = sans_retour(5)
+print(valeur)
+`
+      },
+      {
+        id: 'f-l3', kind: 'lesson', title: 'Plusieurs paramètres et valeurs par défaut',
+        html: `
+<p>Une fonction peut avoir plusieurs paramètres, séparés par des virgules. À l'appel, les arguments sont donnés <strong>dans le même ordre</strong>, ou par leur nom : <code>message(prenom="Koffi")</code>.</p>
+<p>Un paramètre peut avoir une <strong>valeur par défaut</strong>, avec le signe <code>=</code> dans la définition. Si on ne fournit pas cet argument à l'appel, Python utilise la valeur par défaut. Les paramètres avec valeur par défaut se placent à la fin.</p>
+<p class="try">À toi : exécute l'exemple, puis change la valeur par défaut de <code>salutation</code> et regarde quels appels sont modifiés.</p>`,
+        example: `def message(prenom, salutation="Bonjour"):
+    return salutation + " " + prenom + " !"
+
+print(message("Awa"))
+print(message("Awa", "Bonsoir"))
+print(message(prenom="Koffi", salutation="Salut"))
+`
+      },
+      {
+        id: 'f-ex1', kind: 'exercise', title: 'Ta première fonction',
+        brief: `
+<p>Définis une fonction qui calcule le carré d'un nombre.</p>
+<ol>
+  <li>Définis une fonction <code>carre</code> avec un paramètre <code>x</code>.</li>
+  <li>Elle doit <strong>renvoyer</strong> (avec <code>return</code>) <code>x</code> multiplié par lui-même.</li>
+</ol>
+<p class="small muted">Pour vérifier ton travail, l'application appelle <code>carre</code> avec plusieurs valeurs (positives, nulles, négatives, décimales). Tu peux aussi l'essayer toi-même avec <code>print(carre(5))</code>.</p>`,
+        hint: `La définition commence par <code>def carre(x):</code>. Sur la ligne suivante, indentée de 4 espaces, écris <code>return x * x</code>. Attention : <code>print(x * x)</code> affiche le résultat mais ne le renvoie pas.`,
+        starter: `# Exercice 1 : ta première fonction
+# Définis carre(x), qui RENVOIE x multiplié par lui-même
+
+
+# Pour l'essayer : décommente la ligne suivante
+# print(carre(5))
+`,
+        checks: [
+          { label: 'Tu définis la fonction carre avec def', test: (r, code) => /^\s*def\s+carre\s*\(/m.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) }
+        ],
+        calls: [
+          { call: 'carre(4)', expect: 16 },
+          { call: 'carre(0)', expect: 0 },
+          { call: 'carre(-3)', expect: 9 },
+          { call: 'carre(2.5)', expect: 6.25 }
+        ],
+        solution: `def carre(x):
+    return x * x
+
+print(carre(5))`,
+        explanation: `
+<p><code>def carre(x):</code> crée la fonction ; <code>return x * x</code> calcule le résultat et le renvoie à celui qui a appelé la fonction. Ainsi, <code>carre(4)</code> « devient » <code>16</code> et peut être utilisé partout : <code>carre(3) + carre(4)</code> donne 25.</p>
+<p>L'erreur classique est d'écrire <code>print(x * x)</code> au lieu de <code>return</code>. Le nombre s'affiche à l'écran, mais la fonction renvoie <code>None</code> et on ne peut plus rien faire du résultat.</p>
+<p>Une fonction bien faite marche pour <strong>toutes</strong> les valeurs : c'est pourquoi on la teste avec un nombre négatif, zéro et un décimal.</p>`
+      },
+      {
+        id: 'f-ex2', kind: 'exercise', title: 'Prix après remise',
+        brief: `
+<p>Définis une fonction qui calcule un prix après une remise en pourcentage.</p>
+<ol>
+  <li>Définis <code>prix_final</code> avec deux paramètres : <code>prix</code> et <code>remise</code>.</li>
+  <li><code>remise</code> est un pourcentage et vaut <strong>0 par défaut</strong>.</li>
+  <li>La fonction renvoie le prix après remise : <code>prix_final(100, 20)</code> renvoie <code>80</code>, et <code>prix_final(50)</code> renvoie <code>50</code>.</li>
+</ol>
+<p class="small muted">Ta fonction sera appelée avec des arguments dans l'ordre, par leur nom, et sans la remise.</p>`,
+        hint: `Écris <code>def prix_final(prix, remise=0):</code>. Une remise de 20 % revient à payer 80 % du prix : <code>prix * (100 - remise) / 100</code>. Garde bien les noms <code>prix</code> et <code>remise</code> : l'application les utilise.`,
+        starter: `# Exercice 2 : prix après remise
+# Définis prix_final(prix, remise=0) qui renvoie le prix après remise (en %)
+
+
+# Pour l'essayer : print(prix_final(100, 20))
+`,
+        checks: [
+          { label: 'Tu définis prix_final avec une valeur par défaut remise=0', test: (r, code) => /def\s+prix_final\s*\([^)]*\bremise\s*=\s*0\b/.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) }
+        ],
+        calls: [
+          { call: 'prix_final(100, 20)', expect: 80 },
+          { call: 'prix_final(50)', expect: 50 },
+          { call: 'prix_final(200, remise=50)', expect: 100 },
+          { call: 'prix_final(prix=80, remise=25)', expect: 60 },
+          { call: 'prix_final(0, 10)', expect: 0 }
+        ],
+        solution: `def prix_final(prix, remise=0):
+    return prix * (100 - remise) / 100
+
+print(prix_final(100, 20))`,
+        explanation: `
+<p><code>remise=0</code> dans la définition est une <strong>valeur par défaut</strong> : si on appelle <code>prix_final(50)</code> sans deuxième argument, Python utilise 0 et le prix ne change pas. Le paramètre devient facultatif.</p>
+<p>On peut passer les arguments dans l'ordre (<code>prix_final(100, 20)</code>) ou par leur nom (<code>prix_final(prix=80, remise=25)</code>). C'est pourquoi les noms des paramètres comptent : avec d'autres noms, l'appel par nom échouerait avec une <code>TypeError</code>.</p>
+<p>La formule <code>prix * (100 - remise) / 100</code> calcule le pourcentage restant à payer : avec 20 % de remise, il reste 80 % du prix.</p>`
+      },
+      {
+        id: 'f-ex3', kind: 'exercise', title: 'Catégorie d\'âge',
+        brief: `
+<p>Combine fonctions et conditions : définis une fonction qui renvoie la catégorie d'une personne selon son âge.</p>
+<ol>
+  <li>Définis <code>categorie</code> avec un paramètre <code>age</code>.</li>
+  <li>Elle renvoie <code>Enfant</code> si l'âge est inférieur à 13, <code>Adolescent</code> de 13 à 17 ans, et <code>Adulte</code> à partir de 18 ans.</li>
+  <li>Utilise <code>return</code> (pas <code>print()</code>) : la fonction renvoie un texte.</li>
+</ol>
+<p class="small muted">Ta fonction sera appelée avec plusieurs âges, dont les valeurs limites 12, 13, 17 et 18.</p>`,
+        hint: `Utilise <code>if</code> / <code>elif</code> / <code>else</code> dans la fonction, avec un <code>return</code> dans chaque branche. Dès qu'un <code>return</code> est exécuté, la fonction s'arrête.`,
+        starter: `# Exercice 3 : catégorie d'âge
+# Définis categorie(age) : "Enfant" (< 13), "Adolescent" (13 à 17), "Adulte" (18 et plus)
+
+
+# Pour l'essayer : print(categorie(15))
+`,
+        checks: [
+          { label: 'Tu définis la fonction categorie avec def', test: (r, code) => /^\s*def\s+categorie\s*\(/m.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) }
+        ],
+        calls: [
+          { call: 'categorie(0)', expect: 'Enfant' },
+          { call: 'categorie(12)', expect: 'Enfant' },
+          { call: 'categorie(13)', expect: 'Adolescent' },
+          { call: 'categorie(17)', expect: 'Adolescent' },
+          { call: 'categorie(18)', expect: 'Adulte' },
+          { call: 'categorie(40)', expect: 'Adulte' }
+        ],
+        solution: `def categorie(age):
+    if age < 13:
+        return "Enfant"
+    elif age < 18:
+        return "Adolescent"
+    else:
+        return "Adulte"
+
+print(categorie(15))`,
+        explanation: `
+<p>Chaque branche du <code>if</code> contient un <code>return</code> : dès qu'une condition est vraie, la fonction renvoie sa valeur et s'arrête, sans lire la suite. L'ordre des conditions suffit donc, comme avec <code>if</code> / <code>elif</code> au module 2 : si <code>age &lt; 13</code> est faux, tu sais déjà que l'âge est au moins 13.</p>
+<p>La fonction <strong>renvoie</strong> un texte au lieu de l'afficher : celui qui l'appelle décide quoi en faire (l'afficher, le stocker, le comparer). C'est ce qui rend une fonction réutilisable.</p>
+<p>Si aucune branche n'avait de <code>return</code>, ou si tu oubliais le <code>else</code> pour un cas non prévu, la fonction renverrait <code>None</code> : pense à couvrir tous les cas.</p>`
+      }
+    ]
+  },
+  {
+    id: 'm5',
+    title: 'Listes et dictionnaires',
+    summary: 'Ranger plusieurs valeurs dans une liste, les parcourir et les filtrer, puis associer des clés à des valeurs avec un dictionnaire.',
+    available: true,
+    doneText: 'Tu sais créer et modifier des listes, les parcourir avec for, et utiliser un dictionnaire pour associer une valeur à une clé et compter des occurrences.',
+    steps: [
+      {
+        id: 'ld-l1', kind: 'lesson', title: 'Les listes',
+        html: `
+<p>Une <strong>liste</strong> range plusieurs valeurs dans une seule variable, dans un ordre précis. On l'écrit entre crochets, avec des virgules : <code>notes = [12, 15, 9]</code>.</p>
+<ul>
+  <li>Chaque élément a une <strong>position</strong>, appelée indice, et <strong>on commence à compter à 0</strong> : <code>notes[0]</code> est le premier élément, <code>notes[1]</code> le deuxième.</li>
+  <li>Un indice négatif part de la fin : <code>notes[-1]</code> est le dernier élément.</li>
+  <li><code>len(notes)</code> donne le nombre d'éléments.</li>
+  <li>Une liste se modifie : <code>notes[0] = 14</code> remplace un élément, <code>notes.append(18)</code> ajoute à la fin, <code>notes.remove(9)</code> retire la première valeur égale à 9.</li>
+  <li>Une liste peut mélanger les types, et <code>[]</code> est la liste vide.</li>
+</ul>
+<p>Attention : demander un indice qui n'existe pas (par exemple <code>notes[10]</code> pour 3 éléments) provoque une <code>IndexError</code>.</p>
+<p class="try">À toi : exécute l'exemple, puis affiche <code>notes[3]</code> et lis le message d'erreur.</p>`,
+        example: `notes = [12, 15, 9]
+print(notes)
+print(notes[0])
+print(notes[-1])
+print(len(notes))
+
+notes.append(18)
+notes[0] = 14
+print(notes)
+`
+      },
+      {
+        id: 'ld-l2', kind: 'lesson', title: 'Parcourir une liste',
+        html: `
+<p>Avec <code>for</code>, tu peux lire les éléments d'une liste un par un, sans passer par <code>range()</code> : <code>for note in notes:</code>. À chaque tour, <code>note</code> vaut l'élément suivant.</p>
+<ul>
+  <li><code>x in liste</code> vaut <code>True</code> si la valeur est dans la liste, <code>False</code> sinon.</li>
+  <li><code>sum(liste)</code>, <code>min(liste)</code> et <code>max(liste)</code> calculent le total, le plus petit et le plus grand élément (pour des nombres).</li>
+  <li>Pour <strong>construire une nouvelle liste</strong>, on part d'une liste vide et on ajoute avec <code>append</code> dans la boucle. C'est le même principe que l'accumulateur du module 3, mais avec une liste au lieu d'un nombre.</li>
+</ul>
+<p class="try">À toi : change la condition pour garder les notes supérieures ou égales à 12, puis ajoute une ligne qui affiche <code>max(notes)</code>.</p>`,
+        example: `notes = [8, 14, 11, 5, 17]
+
+bonnes = []
+for note in notes:
+    if note >= 10:
+        bonnes.append(note)
+
+print(bonnes)
+print("Total :", sum(notes))
+print(14 in notes)
+`
+      },
+      {
+        id: 'ld-l3', kind: 'lesson', title: 'Les dictionnaires',
+        html: `
+<p>Un <strong>dictionnaire</strong> associe une <strong>clé</strong> à une <strong>valeur</strong>, comme un carnet où l'on cherche un nom pour trouver un numéro. On l'écrit entre accolades : <code>{"pomme": 3, "poire": 5}</code>. Ici, <code>"pomme"</code> est la clé et <code>3</code> la valeur.</p>
+<ul>
+  <li>On lit une valeur avec sa clé : <code>stock["pomme"]</code>. Si la clé n'existe pas, Python lève une <code>KeyError</code>.</li>
+  <li>On ajoute ou on modifie avec la même écriture : <code>stock["kiwi"] = 7</code>. Si la clé existe déjà, sa valeur est remplacée.</li>
+  <li><code>"pomme" in stock</code> teste si une <strong>clé</strong> existe.</li>
+  <li><code>stock.get("kiwi", 0)</code> renvoie la valeur, ou <code>0</code> si la clé n'existe pas, sans erreur.</li>
+  <li><code>for cle, valeur in stock.items():</code> parcourt les paires. <code>for cle in stock:</code> parcourt seulement les clés.</li>
+</ul>
+<p>Contrairement à une liste, un dictionnaire se consulte par clé et non par position.</p>
+<p class="try">À toi : exécute l'exemple, puis affiche <code>stock["banane"]</code> et lis l'erreur obtenue.</p>`,
+        example: `stock = {"pomme": 3, "poire": 5}
+print(stock["pomme"])
+
+stock["kiwi"] = 7
+stock["pomme"] = stock["pomme"] + 1
+print(stock)
+
+print("poire" in stock)
+print(stock.get("banane", 0))
+
+for fruit, quantite in stock.items():
+    print(fruit, ":", quantite)
+`
+      },
+      {
+        id: 'ld-ex1', kind: 'exercise', title: 'Ma liste de courses',
+        brief: `
+<p>Crée une liste et modifie-la.</p>
+<ol>
+  <li>Crée la liste <code>fruits</code> avec <code>"pomme"</code>, <code>"banane"</code> et <code>"orange"</code>, dans cet ordre.</li>
+  <li>Ajoute <code>"mangue"</code> à la fin avec <code>append</code>.</li>
+  <li>Affiche le nombre d'éléments, puis le premier élément (deux <code>print()</code>, dans cet ordre).</li>
+</ol>
+<p class="small muted">Sortie attendue : une ligne <code>4</code>, puis une ligne <code>pomme</code>.</p>`,
+        hint: `Une liste s'écrit <code>fruits = ["pomme", "banane", "orange"]</code>. Pour ajouter : <code>fruits.append("mangue")</code>. Le nombre d'éléments est <code>len(fruits)</code>, le premier élément est <code>fruits[0]</code>.`,
+        starter: `# Exercice 1 : ta liste de courses
+# 1. Crée la liste fruits : "pomme", "banane", "orange"
+# 2. Ajoute "mangue" à la fin avec append
+# 3. Affiche len(fruits), puis le premier élément
+
+`,
+        checks: [
+          { label: 'fruits est une liste',
+            test: (r) => !!r.variables.fruits && r.variables.fruits.type === 'list' },
+          { label: 'Tu utilises append pour ajouter « mangue »',
+            test: (r, code) => /\.append\s*\(/.test(code) },
+          { label: 'Le programme affiche 4, puis pomme',
+            test: (r) => {
+              const lines = r.stdout.split('\n').map((x) => x.trim()).filter(Boolean);
+              return lines.length >= 2 && lines[lines.length - 2] === '4' && lines[lines.length - 1] === 'pomme';
+            } }
+        ],
+        calls: [
+          { call: 'fruits == ["pomme", "banane", "orange", "mangue"]', expect: true,
+            label: 'fruits contient pomme, banane, orange puis mangue, dans cet ordre' }
+        ],
+        solution: `fruits = ["pomme", "banane", "orange"]
+fruits.append("mangue")
+
+print(len(fruits))
+print(fruits[0])`,
+        explanation: `
+<p><code>fruits = ["pomme", "banane", "orange"]</code> crée une liste de trois textes. <code>append("mangue")</code> ajoute un élément <strong>à la fin</strong> et <strong>modifie la liste elle-même</strong> : il n'y a pas besoin d'écrire <code>fruits = fruits.append(...)</code>. Cette écriture-là est un piège classique : <code>append</code> renvoie <code>None</code>, et tu perdrais ta liste.</p>
+<p><code>len(fruits)</code> vaut maintenant 4 : la mangue compte. Et <code>fruits[0]</code> est <code>"pomme"</code>, car les indices commencent à <strong>0</strong>. Le dernier élément se lit avec <code>fruits[-1]</code>.</p>
+<p>À retenir : une liste est ordonnée, modifiable, et on y accède par position.</p>`
+      },
+      {
+        id: 'ld-ex2', kind: 'exercise', title: 'Garder les notes réussies',
+        brief: `
+<p>Définis une fonction qui filtre une liste de notes.</p>
+<ol>
+  <li>Définis <code>reussies</code> avec un paramètre <code>notes</code>.</li>
+  <li>Elle <strong>renvoie</strong> une nouvelle liste avec uniquement les notes supérieures ou égales à 10, dans le même ordre.</li>
+  <li>Elle ne doit pas modifier la liste reçue.</li>
+</ol>
+<p class="small muted">Exemple : <code>reussies([8, 12, 10, 5, 15])</code> renvoie <code>[12, 10, 15]</code>.</p>`,
+        hint: `Commence par une liste vide : <code>resultat = []</code>. Parcours <code>notes</code> avec <code>for</code>, et dans la boucle, si la note est au moins 10, ajoute-la avec <code>resultat.append(note)</code>. Termine par <code>return resultat</code>, en dehors de la boucle.`,
+        starter: `# Exercice 2 : garder les notes réussies
+# Définis reussies(notes) : elle renvoie la liste des notes >= 10
+
+# Pour l'essayer : print(reussies([8, 12, 10, 5, 15]))
+`,
+        checks: [
+          { label: 'Tu définis la fonction reussies avec def', test: (r, code) => /^\s*def\s+reussies\s*\(/m.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) }
+        ],
+        calls: [
+          { call: 'type(reussies([12])).__name__', expect: 'list', label: 'La fonction renvoie une liste (avec return)' },
+          { call: 'reussies([8, 12, 10, 5, 15]) == [12, 10, 15]', expect: true, label: 'reussies([8, 12, 10, 5, 15]) renvoie [12, 10, 15]' },
+          { call: 'reussies([3, 4]) == []', expect: true, label: 'reussies([3, 4]) renvoie une liste vide []' },
+          { call: 'reussies([]) == []', expect: true, label: 'reussies([]) renvoie une liste vide []' },
+          { call: '(lambda n: (reussies(n), n)[1] == [9, 11, 10])([9, 11, 10])', expect: true, label: 'La liste reçue n\'est pas modifiée par la fonction' }
+        ],
+        solution: `def reussies(notes):
+    resultat = []
+    for note in notes:
+        if note >= 10:
+            resultat.append(note)
+    return resultat
+
+print(reussies([8, 12, 10, 5, 15]))`,
+        explanation: `
+<p>On construit la réponse dans une <strong>nouvelle liste</strong> : <code>resultat = []</code> au départ, puis <code>append</code> à chaque note qui passe le test. C'est le schéma « parcourir, tester, ajouter », que tu retrouveras très souvent.</p>
+<p>Le <code>return resultat</code> est <strong>aligné avec le <code>for</code></strong>, pas dans la boucle. S'il était dans la boucle, la fonction s'arrêterait dès le premier tour et ne renverrait qu'une partie du résultat.</p>
+<p>Comme on ne touche pas à <code>notes</code>, la liste d'origine reste intacte. Retirer des éléments d'une liste pendant qu'on la parcourt est une source de bugs : construire une nouvelle liste est plus sûr. Une liste vide est un cas valide : la fonction renvoie alors <code>[]</code>.</p>`
+      },
+      {
+        id: 'ld-ex3', kind: 'exercise', title: 'Compter les occurrences',
+        brief: `
+<p>Définis une fonction qui compte combien de fois chaque mot apparaît dans une liste.</p>
+<ol>
+  <li>Définis <code>compter</code> avec un paramètre <code>mots</code> (une liste de textes).</li>
+  <li>Elle <strong>renvoie</strong> un dictionnaire : chaque mot est une clé, et sa valeur est le nombre de fois où il apparaît.</li>
+</ol>
+<p class="small muted">Exemple : <code>compter(["chat", "chien", "chat"])</code> renvoie <code>{"chat": 2, "chien": 1}</code>.</p>`,
+        hint: `Pars d'un dictionnaire vide : <code>resultat = {}</code>. Pour chaque mot, si <code>mot in resultat</code>, augmente sa valeur de 1 ; sinon, crée la clé avec la valeur 1. Variante courte : <code>resultat[mot] = resultat.get(mot, 0) + 1</code>.`,
+        starter: `# Exercice 3 : compter les occurrences
+# Définis compter(mots) : elle renvoie un dictionnaire {mot: nombre de fois}
+
+# Pour l'essayer : print(compter(["chat", "chien", "chat"]))
+`,
+        checks: [
+          { label: 'Tu définis la fonction compter avec def', test: (r, code) => /^\s*def\s+compter\s*\(/m.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) }
+        ],
+        calls: [
+          { call: 'type(compter(["a"])).__name__', expect: 'dict', label: 'La fonction renvoie un dictionnaire (avec return)' },
+          { call: 'compter(["chat", "chien", "chat"]) == {"chat": 2, "chien": 1}', expect: true, label: 'compter(["chat", "chien", "chat"]) renvoie {"chat": 2, "chien": 1}' },
+          { call: 'compter(["a", "a", "a"]) == {"a": 3}', expect: true, label: 'compter(["a", "a", "a"]) renvoie {"a": 3}' },
+          { call: 'compter(["x", "y", "z", "y"]) == {"x": 1, "y": 2, "z": 1}', expect: true, label: 'compter(["x", "y", "z", "y"]) renvoie {"x": 1, "y": 2, "z": 1}' },
+          { call: 'compter([]) == {}', expect: true, label: 'compter([]) renvoie un dictionnaire vide {}' }
+        ],
+        solution: `def compter(mots):
+    resultat = {}
+    for mot in mots:
+        if mot in resultat:
+            resultat[mot] = resultat[mot] + 1
+        else:
+            resultat[mot] = 1
+    return resultat
+
+print(compter(["chat", "chien", "chat"]))`,
+        explanation: `
+<p>Le dictionnaire sert de carnet de comptes : pour chaque mot, on regarde s'il a déjà une entrée. Si oui (<code>mot in resultat</code>), on augmente son compteur de 1. Sinon, on crée l'entrée avec la valeur 1. Sans ce test, <code>resultat[mot] + 1</code> lèverait une <code>KeyError</code> au premier passage d'un mot.</p>
+<p>La version courte <code>resultat[mot] = resultat.get(mot, 0) + 1</code> fait la même chose : <code>get</code> renvoie 0 quand la clé n'existe pas encore.</p>
+<p>Ce schéma « compter avec un dictionnaire » est l'un des plus utiles en Python : fréquence de mots, votes, ventes par produit. Il combine tout le module : boucle <code>for</code>, test <code>in</code>, et lecture / écriture par clé.</p>`
+      }
+    ]
+  },
+  {
+    id: 'poo',
+    title: 'Programmation orientée objet',
+    summary: 'Modéliser des objets avec des classes : attributs, méthodes, __init__, __str__ et héritage. Ce module ne nécessite pas les listes.',
+    available: true,
+    doneText: "Tu sais créer des classes et des objets, leur donner des attributs et des méthodes, les afficher avec __str__ et réutiliser du code grâce à l'héritage.",
+    steps: [
+      {
+        id: 'o-l1', kind: 'lesson', title: 'Classes et objets',
+        html: `
+<p>Jusqu'ici, tu as manipulé des valeurs séparées : un nom dans une variable, un âge dans une autre. La <strong>programmation orientée objet</strong> (POO) regroupe dans un même <strong>objet</strong> les données qui vont ensemble et ce qu'on peut faire avec.</p>
+<ul>
+  <li>Une <strong>classe</strong> est un plan de fabrication (par exemple « Voiture »). Elle décrit ce que contiennent les objets.</li>
+  <li>Un <strong>objet</strong>, ou <strong>instance</strong>, est fabriqué à partir de ce plan : <code>Voiture("Toyota", 2015)</code>. On en crée autant qu'on veut, et chacun a ses propres valeurs.</li>
+  <li>Les valeurs d'un objet s'appellent des <strong>attributs</strong>. On les lit avec un point : <code>v1.marque</code>.</li>
+  <li><code>__init__</code> est appelée automatiquement à la création de l'objet. <code>self</code> désigne l'objet en cours de création : <code>self.marque = marque</code> range la valeur dans l'objet.</li>
+</ul>
+<p>Par convention, le nom d'une classe commence par une majuscule.</p>
+<p class="try">À toi : ajoute une troisième voiture et affiche son année.</p>`,
+        example: `class Voiture:
+    def __init__(self, marque, annee):
+        self.marque = marque
+        self.annee = annee
+
+v1 = Voiture("Toyota", 2015)
+v2 = Voiture("Peugeot", 2020)
+
+print(v1.marque, v1.annee)
+print(v2.marque, v2.annee)
+print(type(v1))
+`
+      },
+      {
+        id: 'o-l2', kind: 'lesson', title: 'Les méthodes',
+        html: `
+<p>Une <strong>méthode</strong> est une fonction définie dans une classe. Son premier paramètre est toujours <code>self</code> : Python le remplit tout seul quand on appelle <code>objet.methode()</code>.</p>
+<ul>
+  <li>Une méthode peut lire et <strong>modifier</strong> les attributs de l'objet avec <code>self.attribut</code>.</li>
+  <li>Chaque objet garde son propre état : modifier <code>c</code> ne change pas <code>autre</code>.</li>
+  <li>Comme toute fonction, une méthode peut renvoyer un résultat avec <code>return</code>.</li>
+</ul>
+<p class="try">À toi : exécute l'exemple, puis ajoute une méthode <code>reinitialiser</code> qui remet <code>valeur</code> à 0 et appelle-la.</p>`,
+        example: `class Compteur:
+    def __init__(self):
+        self.valeur = 0
+
+    def incrementer(self):
+        self.valeur += 1
+
+    def afficher(self):
+        print("Valeur :", self.valeur)
+
+c = Compteur()
+c.incrementer()
+c.incrementer()
+c.afficher()
+
+autre = Compteur()
+autre.afficher()
+`
+      },
+      {
+        id: 'o-l3', kind: 'lesson', title: 'Afficher un objet avec __str__',
+        html: `
+<p>Si tu affiches un objet avec <code>print()</code>, Python montre quelque chose d'illisible comme <code>&lt;__main__.Rectangle object at 0x...&gt;</code>. La méthode spéciale <code>__str__</code> permet de choisir le texte qui représente ton objet : <code>print(objet)</code> et <code>str(objet)</code> l'utilisent.</p>
+<p><code>__str__</code> doit <strong>renvoyer</strong> un texte avec <code>return</code>, pas l'afficher. Les paramètres de <code>__init__</code> peuvent aussi avoir une valeur par défaut, comme pour une fonction normale.</p>
+<p class="try">À toi : supprime la méthode <code>__str__</code> et exécute à nouveau pour voir la différence.</p>`,
+        example: `class Rectangle:
+    def __init__(self, largeur, hauteur=1):
+        self.largeur = largeur
+        self.hauteur = hauteur
+
+    def aire(self):
+        return self.largeur * self.hauteur
+
+    def __str__(self):
+        return "Rectangle " + str(self.largeur) + " x " + str(self.hauteur)
+
+r = Rectangle(4, 3)
+print(r)
+print(r.aire())
+print(Rectangle(5))
+`
+      },
+      {
+        id: 'o-l4', kind: 'lesson', title: 'L\'héritage',
+        html: `
+<p>L'<strong>héritage</strong> permet de créer une classe à partir d'une autre, pour réutiliser son code sans le recopier.</p>
+<ul>
+  <li><code>class Chien(Animal):</code> crée une classe <strong>fille</strong> <code>Chien</code> qui hérite de la classe <strong>mère</strong> <code>Animal</code> : elle reçoit tous ses attributs et ses méthodes.</li>
+  <li>Une classe fille peut <strong>redéfinir</strong> une méthode : sa version remplace celle de la mère pour ses propres objets.</li>
+  <li><code>super().__init__(nom)</code> appelle le <code>__init__</code> de la classe mère, utile quand la fille ajoute ses propres attributs.</li>
+  <li><code>isinstance(objet, Classe)</code> teste si un objet appartient à une classe, ou à une classe fille de celle-ci.</li>
+</ul>
+<p class="try">À toi : exécute l'exemple, puis ajoute une classe <code>Vache</code> qui hérite d'<code>Animal</code> et dit « Meuh ».</p>`,
+        example: `class Animal:
+    def __init__(self, nom):
+        self.nom = nom
+
+    def parler(self):
+        return "..."
+
+class Chien(Animal):
+    def __init__(self, nom, race):
+        super().__init__(nom)
+        self.race = race
+
+    def parler(self):
+        return "Ouaf"
+
+class Chat(Animal):
+    def parler(self):
+        return "Miaou"
+
+rex = Chien("Rex", "berger")
+mina = Chat("Mina")
+
+print(rex.nom, rex.race, rex.parler())
+print(mina.nom, mina.parler())
+print(isinstance(rex, Animal))
+`
+      },
+      {
+        id: 'o-ex1', kind: 'exercise', title: 'Une classe Personne',
+        brief: `
+<p>Crée ta première classe.</p>
+<ol>
+  <li>Définis une classe <code>Personne</code> dont <code>__init__</code> reçoit <code>nom</code> et <code>age</code> et les range dans des attributs du même nom.</li>
+  <li>Ajoute une méthode <code>se_presenter()</code> qui <strong>renvoie</strong> le texte <code>Je suis Awa, 25 ans</code> (avec le nom et l'âge de la personne).</li>
+</ol>
+<p class="small muted">L'application crée plusieurs personnes et vérifie leurs attributs et la phrase renvoyée.</p>`,
+        hint: `Commence par <code>class Personne:</code>, puis <code>def __init__(self, nom, age):</code> avec <code>self.nom = nom</code> et <code>self.age = age</code>. Dans <code>se_presenter</code>, construis le texte avec des <code>+</code> et <code>str(self.age)</code>.`,
+        starter: `# Exercice 1 : une classe Personne
+# Personne(nom, age) avec une méthode se_presenter()
+# qui renvoie par exemple : "Je suis Awa, 25 ans"
+
+
+# Pour l'essayer :
+# p = Personne("Awa", 25)
+# print(p.se_presenter())
+`,
+        checks: [
+          { label: 'Tu définis la classe Personne', test: (r, code) => /^\s*class\s+Personne\b/m.test(code) },
+          { label: 'Tu définis __init__ avec self', test: (r, code) => /def\s+__init__\s*\(\s*self\b/.test(code) }
+        ],
+        calls: [
+          { setup: 'p = Personne("Awa", 25)' },
+          { call: 'p.nom', expect: 'Awa' },
+          { call: 'p.age', expect: 25 },
+          { call: 'p.se_presenter()', expect: 'Je suis Awa, 25 ans' },
+          { setup: 'q = Personne("Koffi", 31)' },
+          { call: 'q.se_presenter()', expect: 'Je suis Koffi, 31 ans' },
+          { call: 'p.nom', expect: 'Awa' }
+        ],
+        solution: `class Personne:
+    def __init__(self, nom, age):
+        self.nom = nom
+        self.age = age
+
+    def se_presenter(self):
+        return "Je suis " + self.nom + ", " + str(self.age) + " ans"
+
+p = Personne("Awa", 25)
+print(p.se_presenter())`,
+        explanation: `
+<p><code>class Personne:</code> décrit le plan. <code>__init__</code> est appelée à chaque <code>Personne(...)</code> : <code>self</code> est le nouvel objet, et <code>self.nom = nom</code> range l'argument dans l'objet pour qu'il le garde.</p>
+<p><code>se_presenter</code> utilise <code>self.nom</code> et <code>self.age</code> : chaque personne se présente avec <strong>ses</strong> valeurs, ce que montre le test avec Awa et Koffi. Comme la méthode <strong>renvoie</strong> le texte au lieu de l'afficher, on peut l'afficher, le stocker ou le comparer.</p>
+<p>Erreurs fréquentes : oublier <code>self</code> en premier paramètre (on obtient une <code>TypeError</code>), ou écrire <code>nom = nom</code> sans <code>self.</code> : la valeur n'est alors pas conservée dans l'objet.</p>`
+      },
+      {
+        id: 'o-ex2', kind: 'exercise', title: 'Un compte bancaire',
+        brief: `
+<p>Modélise un compte bancaire qui garde son solde.</p>
+<ol>
+  <li>Classe <code>Compte</code>, avec <code>__init__(self, titulaire, solde=0)</code> qui crée les attributs <code>titulaire</code> et <code>solde</code>.</li>
+  <li>Méthode <code>deposer(montant)</code> : ajoute le montant au solde.</li>
+  <li>Méthode <code>retirer(montant)</code> : si le montant est inférieur ou égal au solde, retire-le et <strong>renvoie</strong> <code>True</code> ; sinon ne change rien et renvoie <code>False</code>.</li>
+</ol>
+<p class="small muted">L'application crée plusieurs comptes et vérifie que chacun garde son propre solde.</p>`,
+        hint: `Dans <code>retirer</code>, utilise un <code>if montant &lt;= self.solde:</code> : dans la branche vraie, fais <code>self.solde -= montant</code> puis <code>return True</code>. Après le <code>if</code>, <code>return False</code>. N'oublie pas <code>self.</code> devant <code>solde</code>.`,
+        starter: `# Exercice 2 : un compte bancaire
+# Compte(titulaire, solde=0), deposer(montant), retirer(montant)
+
+
+# Pour l'essayer :
+# c = Compte("Awa", 100)
+# c.deposer(50)
+# print(c.retirer(30), c.solde)
+`,
+        checks: [
+          { label: 'Tu définis la classe Compte', test: (r, code) => /^\s*class\s+Compte\b/m.test(code) },
+          { label: 'solde a une valeur par défaut de 0 dans __init__', test: (r, code) => /def\s+__init__\s*\([^)]*\bsolde\s*=\s*0\b/.test(code) }
+        ],
+        calls: [
+          { setup: 'c = Compte("Awa", 100)' },
+          { call: 'c.solde', expect: 100 },
+          { call: 'c.titulaire', expect: 'Awa' },
+          { setup: 'c.deposer(50)' },
+          { call: 'c.solde', expect: 150 },
+          { call: 'c.retirer(30)', expect: true },
+          { call: 'c.solde', expect: 120 },
+          { call: 'c.retirer(500)', expect: false },
+          { call: 'c.solde', expect: 120 },
+          { setup: 'd = Compte("Koffi")' },
+          { call: 'd.solde', expect: 0 },
+          { setup: 'd.deposer(10)' },
+          { call: 'c.solde', expect: 120 },
+          { setup: 'e = Compte("Fatou", 50)' },
+          { call: 'e.retirer(50)', expect: true },
+          { call: 'e.solde', expect: 0 }
+        ],
+        solution: `class Compte:
+    def __init__(self, titulaire, solde=0):
+        self.titulaire = titulaire
+        self.solde = solde
+
+    def deposer(self, montant):
+        self.solde += montant
+
+    def retirer(self, montant):
+        if montant <= self.solde:
+            self.solde -= montant
+            return True
+        return False
+
+compte = Compte("Awa", 100)
+compte.deposer(50)
+print(compte.retirer(30))
+print(compte.solde)`,
+        explanation: `
+<p>L'état du compte vit dans l'attribut <code>self.solde</code>. Les méthodes le <strong>modifient</strong> : <code>deposer</code> ajoute, <code>retirer</code> retranche. Comme chaque objet a son propre <code>solde</code>, déposer sur le compte de Koffi ne change pas celui d'Awa.</p>
+<p><code>retirer</code> protège le compte : si le montant dépasse le solde, la méthode ne change rien et renvoie <code>False</code>. Le cas limite compte : avec <code>&lt;=</code>, on peut retirer exactement tout le solde (<code>e.retirer(50)</code> sur 50 donne <code>True</code> et un solde de 0).</p>
+<p>Une méthode peut à la fois <strong>modifier</strong> l'objet et <strong>renvoyer</strong> une information (ici le succès ou l'échec) : c'est ce qui permet à celui qui l'appelle de réagir.</p>`
+      },
+      {
+        id: 'o-ex3', kind: 'exercise', title: 'Un produit à afficher',
+        brief: `
+<p>Crée une classe qui sait calculer un total et se représenter en texte.</p>
+<ol>
+  <li>Classe <code>Produit</code> avec <code>__init__(self, nom, prix, quantite=1)</code> qui crée les attributs <code>nom</code>, <code>prix</code> et <code>quantite</code>.</li>
+  <li>Méthode <code>total()</code> : renvoie le prix multiplié par la quantité.</li>
+  <li>Méthode <code>__str__</code> : renvoie un texte de la forme <code>Riz : 3 x 500</code> (nom, quantité, prix).</li>
+</ol>
+<p class="small muted">Pense à <code>str()</code> pour convertir les nombres en texte avant de les coller avec <code>+</code>.</p>`,
+        hint: `<code>total</code> : <code>return self.prix * self.quantite</code>. <code>__str__</code> : <code>return self.nom + " : " + str(self.quantite) + " x " + str(self.prix)</code>. Dans <code>__init__</code>, écris <code>quantite=1</code> pour la valeur par défaut.`,
+        starter: `# Exercice 3 : un produit à afficher
+# Produit(nom, prix, quantite=1), total(), __str__ -> "Riz : 3 x 500"
+
+
+# Pour l'essayer :
+# riz = Produit("Riz", 500, 3)
+# print(riz)
+# print(riz.total())
+`,
+        checks: [
+          { label: 'Tu définis la classe Produit', test: (r, code) => /^\s*class\s+Produit\b/m.test(code) },
+          { label: 'Tu définis la méthode __str__', test: (r, code) => /def\s+__str__\s*\(\s*self\s*\)/.test(code) }
+        ],
+        calls: [
+          { setup: 'p = Produit("Riz", 500, 3)' },
+          { call: 'p.total()', expect: 1500 },
+          { call: 'str(p)', expect: 'Riz : 3 x 500' },
+          { setup: 'q = Produit("Sel", 200)' },
+          { call: 'q.quantite', expect: 1 },
+          { call: 'q.total()', expect: 200 },
+          { call: 'str(q)', expect: 'Sel : 1 x 200' }
+        ],
+        solution: `class Produit:
+    def __init__(self, nom, prix, quantite=1):
+        self.nom = nom
+        self.prix = prix
+        self.quantite = quantite
+
+    def total(self):
+        return self.prix * self.quantite
+
+    def __str__(self):
+        return self.nom + " : " + str(self.quantite) + " x " + str(self.prix)
+
+riz = Produit("Riz", 500, 3)
+print(riz)
+print(riz.total())`,
+        explanation: `
+<p><code>total()</code> est une méthode qui <strong>calcule</strong> à partir des attributs : elle renvoie toujours un résultat à jour, même si <code>prix</code> ou <code>quantite</code> changent.</p>
+<p><code>__str__</code> est appelée automatiquement par <code>print(objet)</code> et <code>str(objet)</code>. Elle doit <strong>renvoyer</strong> un texte, pas l'afficher avec <code>print()</code>. Sans elle, <code>print(riz)</code> afficherait un texte technique du genre <code>&lt;__main__.Produit object at 0x...&gt;</code>.</p>
+<p>Les nombres doivent passer par <code>str()</code> avant d'être collés à un texte avec <code>+</code> : sinon, tu obtiens la <code>TypeError</code> déjà rencontrée avec <code>print()</code>.</p>`
+      },
+      {
+        id: 'o-ex4', kind: 'exercise', title: 'Héritage : Chien et Chat',
+        brief: `
+<p>La classe <code>Animal</code> est déjà écrite dans le code de départ : <strong>ne la modifie pas</strong>. Crée deux classes qui en héritent.</p>
+<ol>
+  <li><code>Chien</code> hérite d'<code>Animal</code> et redéfinit <code>parler()</code> pour renvoyer <code>Ouaf</code>.</li>
+  <li><code>Chat</code> hérite d'<code>Animal</code> et redéfinit <code>parler()</code> pour renvoyer <code>Miaou</code>.</li>
+</ol>
+<p class="small muted">Tu n'as pas à réécrire <code>__init__</code> ni <code>se_presenter</code> : elles sont héritées. Observe que <code>se_presenter</code> utilise la bonne version de <code>parler</code> pour chaque animal.</p>`,
+        hint: `Écris <code>class Chien(Animal):</code> puis, dans le bloc indenté, <code>def parler(self):</code> avec <code>return "Ouaf"</code>. Fais la même chose pour <code>Chat</code>, avec « Miaou ».`,
+        starter: `# Exercice 4 : héritage
+class Animal:
+    def __init__(self, nom):
+        self.nom = nom
+
+    def parler(self):
+        return "..."
+
+    def se_presenter(self):
+        return self.nom + " dit " + self.parler()
+
+# Crée Chien et Chat, qui héritent de Animal et redéfinissent parler()
+
+
+# Pour l'essayer :
+# print(Chien("Rex").se_presenter())
+`,
+        checks: [
+          { label: 'Chien hérite de Animal', test: (r, code) => /^\s*class\s+Chien\s*\(\s*Animal\s*\)/m.test(code) },
+          { label: 'Chat hérite de Animal', test: (r, code) => /^\s*class\s+Chat\s*\(\s*Animal\s*\)/m.test(code) }
+        ],
+        calls: [
+          { call: 'Animal("Bob").se_presenter()', expect: 'Bob dit ...' },
+          { setup: 'rex = Chien("Rex")' },
+          { call: 'rex.nom', expect: 'Rex' },
+          { call: 'rex.parler()', expect: 'Ouaf' },
+          { call: 'rex.se_presenter()', expect: 'Rex dit Ouaf' },
+          { setup: 'mina = Chat("Mina")' },
+          { call: 'mina.se_presenter()', expect: 'Mina dit Miaou' },
+          { call: 'isinstance(rex, Animal)', expect: true },
+          { call: 'isinstance(mina, Chien)', expect: false }
+        ],
+        solution: `class Animal:
+    def __init__(self, nom):
+        self.nom = nom
+
+    def parler(self):
+        return "..."
+
+    def se_presenter(self):
+        return self.nom + " dit " + self.parler()
+
+class Chien(Animal):
+    def parler(self):
+        return "Ouaf"
+
+class Chat(Animal):
+    def parler(self):
+        return "Miaou"
+
+print(Chien("Rex").se_presenter())`,
+        explanation: `
+<p><code>class Chien(Animal):</code> dit à Python que <code>Chien</code> hérite d'<code>Animal</code> : elle reçoit gratuitement <code>__init__</code>, l'attribut <code>nom</code> et la méthode <code>se_presenter</code>. Tu n'as écrit que ce qui change : la méthode <code>parler</code>.</p>
+<p>Le résultat important est <code>rex.se_presenter()</code> : cette méthode est écrite une seule fois dans <code>Animal</code>, mais quand elle appelle <code>self.parler()</code>, Python utilise la version du <strong>vrai type</strong> de l'objet : « Ouaf » pour un chien, « Miaou » pour un chat. C'est le <strong>polymorphisme</strong>, une idée centrale de la POO.</p>
+<p><code>isinstance(rex, Animal)</code> est vrai, car un chien est un animal, alors qu'un chat n'est pas un chien. L'héritage évite de recopier le code commun et permet d'ajouter facilement de nouveaux animaux.</p>`
+      }
+    ]
+  },
+  {
+    id: 'm7',
+    title: 'Mini-projet final',
+    summary: 'Assembler tout ce que tu as appris pour construire un petit carnet de notes : un dictionnaire de listes, des fonctions, des boucles et des conditions.',
+    available: true,
+    doneText: 'Tu as construit un vrai petit programme de A à Z, en combinant dictionnaires, listes, fonctions, boucles et conditions. Tu es prêt à créer tes propres projets.',
+    steps: [
+      {
+        id: 'p-l1', kind: 'lesson', title: 'Le projet : un carnet de notes',
+        html: `
+<p>Dans ce projet, tu construis un petit <strong>carnet de notes</strong> pour une classe. Chaque exercice ajoute une fonction, et la dernière étape assemble le tout dans un rapport.</p>
+<p>Les données sont un <strong>dictionnaire de listes</strong> : chaque clé est le prénom d'un élève, et chaque valeur est la liste de ses notes.</p>
+<ul>
+  <li><code>carnet["Awa"]</code> donne la liste des notes d'Awa.</li>
+  <li><code>carnet["Awa"][0]</code> donne sa première note : on lit d'abord la clé, puis l'indice.</li>
+  <li><code>carnet["Awa"].append(9)</code> ajoute une note à sa liste.</li>
+  <li><code>for nom, notes in carnet.items():</code> parcourt chaque élève avec sa liste de notes.</li>
+</ul>
+<p>Les fonctions que tu vas écrire :</p>
+<ol>
+  <li><code>ajouter_note</code> : ajoute une note à un élève.</li>
+  <li><code>moyenne</code> : calcule la moyenne d'une liste de notes.</li>
+  <li><code>moyennes</code> : calcule la moyenne de chaque élève.</li>
+  <li><code>meilleur</code> : trouve l'élève avec la meilleure moyenne.</li>
+  <li><code>rapport</code> : produit une ligne de bilan par élève.</li>
+</ol>
+<p class="try">À toi : exécute l'exemple, puis ajoute un élève <code>"Mina"</code> avec deux notes et affiche sa première note.</p>`,
+        example: `carnet = {"Awa": [12, 15], "Koffi": [8, 11]}
+
+print(carnet["Awa"])
+print(carnet["Awa"][0])
+
+carnet["Awa"].append(9)
+print(carnet["Awa"])
+
+for nom, notes in carnet.items():
+    print(nom, "a", len(notes), "notes")
+`
+      },
+      {
+        id: 'p-l2', kind: 'lesson', title: 'Les outils du projet',
+        html: `
+<p>Trois idées vont te servir tout au long du projet.</p>
+<ul>
+  <li><strong>Arrondir :</strong> <code>round(7.6666, 2)</code> arrondit à 2 décimales et donne <code>7.67</code>.</li>
+  <li><strong>Convertir en texte :</strong> <code>str(12.5)</code> donne <code>"12.5"</code>. Il est nécessaire pour coller un nombre à un texte avec <code>+</code>, comme tu l'as vu au module 1.</li>
+  <li><strong>Une fonction peut en appeler une autre.</strong> <code>moyennes</code> pourra utiliser <code>moyenne</code> au lieu de refaire le calcul. Chaque fonction fait une seule chose, et on les combine.</li>
+</ul>
+<p>Un conseil de méthode : construis par petits morceaux et teste chaque fonction avec un <code>print()</code> avant de passer à la suivante. Si une fonction est fausse, tu sais exactement où chercher.</p>
+<p>Attention à un piège : calculer la moyenne d'une liste vide divise par zéro (<code>ZeroDivisionError</code>). Une bonne fonction prévoit ce cas.</p>
+<p class="try">À toi : exécute l'exemple, puis appelle <code>moyenne([])</code> et observe le résultat.</p>`,
+        example: `def moyenne(notes):
+    if len(notes) == 0:
+        return 0
+    return round(sum(notes) / len(notes), 2)
+
+def bilan(nom, notes):
+    return nom + " : " + str(moyenne(notes))
+
+print(moyenne([7, 8, 8]))
+print(bilan("Awa", [12, 15]))
+`
+      },
+      {
+        id: 'p-ex1', kind: 'exercise', title: 'Ajouter une note',
+        brief: `
+<p>Première brique du projet : enregistrer une note dans le carnet.</p>
+<ol>
+  <li>Définis <code>ajouter_note</code> avec trois paramètres : <code>carnet</code>, <code>eleve</code> et <code>note</code>.</li>
+  <li>Si l'élève n'est pas encore dans le carnet, crée-lui une liste vide.</li>
+  <li>Ajoute la note à la liste de l'élève. La fonction modifie le dictionnaire reçu : elle n'a pas besoin de renvoyer quelque chose.</li>
+</ol>
+<p class="small muted">Exemple : avec <code>carnet = {}</code>, après <code>ajouter_note(carnet, "Awa", 12)</code>, le carnet vaut <code>{"Awa": [12]}</code>.</p>`,
+        hint: `Teste d'abord si l'élève existe : <code>if eleve not in carnet:</code>, puis <code>carnet[eleve] = []</code>. Ensuite, que l'élève soit nouveau ou non : <code>carnet[eleve].append(note)</code>.`,
+        starter: `# Exercice 1 : ajouter une note
+# Définis ajouter_note(carnet, eleve, note)
+
+
+# Pour l'essayer :
+# carnet = {}
+# ajouter_note(carnet, "Awa", 12)
+# ajouter_note(carnet, "Awa", 15)
+# print(carnet)
+`,
+        checks: [
+          { label: 'Tu définis la fonction ajouter_note avec def', test: (r, code) => /^\s*def\s+ajouter_note\s*\(/m.test(code) },
+          { label: 'Tu utilises append', test: (r, code) => /\.append\s*\(/.test(code) }
+        ],
+        calls: [
+          { call: '(lambda c: (ajouter_note(c, "Awa", 12), c)[1] == {"Awa": [12]})({})', expect: true, label: 'Un nouvel élève reçoit une liste avec sa première note' },
+          { call: '(lambda c: (ajouter_note(c, "Awa", 12), ajouter_note(c, "Awa", 15), c)[2] == {"Awa": [12, 15]})({})', expect: true, label: 'Deux notes ajoutées au même élève sont dans l\'ordre : [12, 15]' },
+          { call: '(lambda c: (ajouter_note(c, "Awa", 15), c)[1] == {"Awa": [12, 15]})({"Awa": [12]})', expect: true, label: 'Une note s\'ajoute à la liste d\'un élève déjà présent' },
+          { call: '(lambda c: (ajouter_note(c, "Koffi", 9), c)[1] == {"Awa": [12], "Koffi": [9]})({"Awa": [12]})', expect: true, label: 'Les notes des autres élèves ne changent pas' }
+        ],
+        solution: `def ajouter_note(carnet, eleve, note):
+    if eleve not in carnet:
+        carnet[eleve] = []
+    carnet[eleve].append(note)
+
+carnet = {}
+ajouter_note(carnet, "Awa", 12)
+ajouter_note(carnet, "Awa", 15)
+print(carnet)`,
+        explanation: `
+<p>Le test <code>eleve not in carnet</code> vérifie la <strong>clé</strong> dans le dictionnaire. Sans lui, <code>carnet[eleve].append(note)</code> lèverait une <code>KeyError</code> pour un nouvel élève, puisque sa liste n'existe pas encore.</p>
+<p>La fonction ne renvoie rien : un dictionnaire est <strong>modifiable</strong>, et la fonction travaille directement sur celui que tu lui donnes. Après l'appel, ton <code>carnet</code> a changé, sans qu'il soit nécessaire de récupérer un résultat. C'est le même principe que <code>append</code> sur une liste.</p>
+<p>Cette fonction est la brique de base du projet : tout le reste lira les listes qu'elle remplit.</p>`
+      },
+      {
+        id: 'p-ex2', kind: 'exercise', title: 'Calculer une moyenne',
+        brief: `
+<p>Définis une fonction qui calcule la moyenne d'une liste de notes.</p>
+<ol>
+  <li>Définis <code>moyenne</code> avec un paramètre <code>notes</code>.</li>
+  <li>Elle <strong>renvoie</strong> la somme des notes divisée par leur nombre, arrondie à 2 décimales.</li>
+  <li>Si la liste est vide, elle renvoie <code>0</code> (sans erreur).</li>
+</ol>
+<p class="small muted">Exemples : <code>moyenne([10, 15])</code> renvoie <code>12.5</code>, et <code>moyenne([7, 8, 8])</code> renvoie <code>7.67</code>.</p>`,
+        hint: `Commence par traiter la liste vide : <code>if len(notes) == 0:</code> puis <code>return 0</code>. Sinon : <code>return round(sum(notes) / len(notes), 2)</code>.`,
+        starter: `# Exercice 2 : calculer une moyenne
+# Définis moyenne(notes) : somme / nombre de notes, arrondie à 2 décimales
+# Une liste vide donne 0
+
+
+# Pour l'essayer : print(moyenne([10, 15]))
+`,
+        checks: [
+          { label: 'Tu définis la fonction moyenne avec def', test: (r, code) => /^\s*def\s+moyenne\s*\(/m.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) }
+        ],
+        calls: [
+          { call: 'moyenne([10, 15])', expect: 12.5 },
+          { call: 'moyenne([7, 8, 8])', expect: 7.67 },
+          { call: 'moyenne([14])', expect: 14 },
+          { call: 'moyenne([])', expect: 0 }
+        ],
+        solution: `def moyenne(notes):
+    if len(notes) == 0:
+        return 0
+    return round(sum(notes) / len(notes), 2)
+
+print(moyenne([10, 15]))`,
+        explanation: `
+<p><code>sum(notes)</code> additionne la liste, <code>len(notes)</code> compte les éléments, et la division donne la moyenne. <code>round(..., 2)</code> garde 2 décimales : sans lui, <code>[7, 8, 8]</code> donnerait <code>7.666666666666667</code>.</p>
+<p>Le cas de la liste vide est traité <strong>en premier</strong>. Sans cette ligne, <code>sum([]) / len([])</code> devient <code>0 / 0</code> et provoque une <code>ZeroDivisionError</code>. Un élève sans note ne doit pas faire planter tout le carnet.</p>
+<p>Le <code>return 0</code> dans le <code>if</code> arrête la fonction tout de suite : la ligne suivante ne s'exécute que pour une liste non vide. C'est le fonctionnement que tu connais depuis le module des fonctions.</p>`
+      },
+      {
+        id: 'p-ex3', kind: 'exercise', title: 'La moyenne de chaque élève',
+        brief: `
+<p>Combine le dictionnaire et la fonction <code>moyenne</code>, qui est déjà écrite dans le code de départ.</p>
+<ol>
+  <li>Définis <code>moyennes</code> avec un paramètre <code>carnet</code>.</li>
+  <li>Elle <strong>renvoie</strong> un nouveau dictionnaire : chaque clé est un élève, chaque valeur est sa moyenne.</li>
+  <li>Utilise la fonction <code>moyenne</code> au lieu de refaire le calcul.</li>
+</ol>
+<p class="small muted">Exemple : <code>moyennes({"Awa": [10, 15], "Koffi": [8, 9]})</code> renvoie <code>{"Awa": 12.5, "Koffi": 8.5}</code>.</p>`,
+        hint: `Pars d'un dictionnaire vide : <code>resultat = {}</code>. Parcours <code>carnet.items()</code> avec <code>for nom, notes in carnet.items():</code>, puis range <code>moyenne(notes)</code> sous la clé <code>nom</code>. N'oublie pas le <code>return</code> après la boucle.`,
+        starter: `# Exercice 3 : la moyenne de chaque élève
+def moyenne(notes):
+    if len(notes) == 0:
+        return 0
+    return round(sum(notes) / len(notes), 2)
+
+# Définis moyennes(carnet) : un dictionnaire {élève: moyenne}
+
+
+# Pour l'essayer : print(moyennes({"Awa": [10, 15], "Koffi": [8, 9]}))
+`,
+        checks: [
+          { label: 'Tu définis la fonction moyennes avec def', test: (r, code) => /^\s*def\s+moyennes\s*\(/m.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) },
+          { label: 'Tu réutilises la fonction moyenne dans moyennes', test: (r, code) => /moyenne\s*\(/.test(code.split(/^\s*def\s+moyennes\s*\(/m)[1] || '') }
+        ],
+        calls: [
+          { call: 'type(moyennes({"A": [10]})).__name__', expect: 'dict', label: 'La fonction renvoie un dictionnaire (avec return)' },
+          { call: 'moyennes({"Awa": [10, 15], "Koffi": [8, 9]}) == {"Awa": 12.5, "Koffi": 8.5}', expect: true, label: 'moyennes({"Awa": [10, 15], "Koffi": [8, 9]}) renvoie {"Awa": 12.5, "Koffi": 8.5}' },
+          { call: 'moyennes({"Mina": [7, 8, 8]}) == {"Mina": 7.67}', expect: true, label: 'Les moyennes sont arrondies à 2 décimales : {"Mina": 7.67}' },
+          { call: 'moyennes({"Zoe": []}) == {"Zoe": 0}', expect: true, label: 'Un élève sans note a une moyenne de 0' },
+          { call: 'moyennes({}) == {}', expect: true, label: 'moyennes({}) renvoie un dictionnaire vide {}' }
+        ],
+        solution: `def moyenne(notes):
+    if len(notes) == 0:
+        return 0
+    return round(sum(notes) / len(notes), 2)
+
+def moyennes(carnet):
+    resultat = {}
+    for nom, notes in carnet.items():
+        resultat[nom] = moyenne(notes)
+    return resultat
+
+print(moyennes({"Awa": [10, 15], "Koffi": [8, 9]}))`,
+        explanation: `
+<p><code>carnet.items()</code> donne chaque paire (élève, liste de notes). On calcule la moyenne de la liste avec la fonction <code>moyenne</code>, puis on la range dans un <strong>nouveau</strong> dictionnaire sous le même nom : <code>resultat[nom] = ...</code>.</p>
+<p>Le fait d'appeler <code>moyenne</code> depuis <code>moyennes</code> est essentiel : si tu corriges un jour le calcul de la moyenne, il suffit de le faire à un seul endroit. Une fonction courte qui fait une seule chose se réutilise facilement.</p>
+<p>Le <code>return resultat</code> est <strong>après</strong> la boucle, pour renvoyer tous les élèves et non le premier seulement. Le carnet d'origine n'est pas modifié.</p>`
+      },
+      {
+        id: 'p-ex4', kind: 'exercise', title: 'Trouver le meilleur élève',
+        brief: `
+<p>Les fonctions <code>moyenne</code> et <code>moyennes</code> sont déjà écrites dans le code de départ. Utilise-les.</p>
+<ol>
+  <li>Définis <code>meilleur</code> avec un paramètre <code>carnet</code>.</li>
+  <li>Elle <strong>renvoie</strong> le prénom de l'élève qui a la meilleure moyenne.</li>
+</ol>
+<p class="small muted">Exemple : <code>meilleur({"A": [10, 12], "B": [15, 9], "C": [8]})</code> renvoie <code>"B"</code> (moyennes : 11, 12 et 8). Le carnet contient au moins un élève.</p>`,
+        hint: `Calcule d'abord <code>m = moyennes(carnet)</code>. Garde en mémoire le nom du meilleur élève rencontré et sa moyenne : pour chaque <code>nom, valeur in m.items()</code>, si <code>valeur</code> dépasse la meilleure moyenne connue, mets à jour les deux variables. Commence avec <code>meilleur_nom = None</code> et <code>meilleure = -1</code>.`,
+        starter: `# Exercice 4 : trouver le meilleur élève
+def moyenne(notes):
+    if len(notes) == 0:
+        return 0
+    return round(sum(notes) / len(notes), 2)
+
+def moyennes(carnet):
+    resultat = {}
+    for nom, notes in carnet.items():
+        resultat[nom] = moyenne(notes)
+    return resultat
+
+# Définis meilleur(carnet) : le prénom de l'élève avec la meilleure moyenne
+
+
+# Pour l'essayer : print(meilleur({"A": [10, 12], "B": [15, 9], "C": [8]}))
+`,
+        checks: [
+          { label: 'Tu définis la fonction meilleur avec def', test: (r, code) => /^\s*def\s+meilleur\s*\(/m.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) }
+        ],
+        calls: [
+          { call: 'meilleur({"A": [10, 12], "B": [15, 9], "C": [8]})', expect: 'B' },
+          { call: 'meilleur({"Awa": [12, 15, 9], "Koffi": [8, 7, 11], "Mina": [16, 14, 18]})', expect: 'Mina' },
+          { call: 'meilleur({"X": [20], "Y": [10, 10]})', expect: 'X' },
+          { call: 'meilleur({"Seul": [5]})', expect: 'Seul' }
+        ],
+        solution: `def moyenne(notes):
+    if len(notes) == 0:
+        return 0
+    return round(sum(notes) / len(notes), 2)
+
+def moyennes(carnet):
+    resultat = {}
+    for nom, notes in carnet.items():
+        resultat[nom] = moyenne(notes)
+    return resultat
+
+def meilleur(carnet):
+    m = moyennes(carnet)
+    meilleur_nom = None
+    meilleure = -1
+    for nom, valeur in m.items():
+        if valeur > meilleure:
+            meilleur_nom = nom
+            meilleure = valeur
+    return meilleur_nom
+
+print(meilleur({"A": [10, 12], "B": [15, 9], "C": [8]}))`,
+        explanation: `
+<p>C'est le schéma du <strong>maximum</strong> : on garde le meilleur candidat vu jusqu'ici (<code>meilleur_nom</code>) et son score (<code>meilleure</code>). À chaque élève, si sa moyenne est plus grande, on remplace les deux. À la fin de la boucle, la variable contient le gagnant.</p>
+<p>On part de <code>-1</code> parce qu'aucune moyenne n'est négative : la première valeur rencontrée la dépasse toujours, donc <code>meilleur_nom</code> reçoit bien un nom.</p>
+<p>Le <code>return</code> est après la boucle. Remarque aussi que <code>meilleur</code> s'appuie sur <code>moyennes</code>, qui s'appuie sur <code>moyenne</code> : trois petites fonctions emboîtées font un programme lisible. En cas d'égalité, c'est le premier élève rencontré qui est gardé, car <code>&gt;</code> est strict.</p>`
+      },
+      {
+        id: 'p-ex5', kind: 'exercise', title: 'Le rapport final',
+        brief: `
+<p>Dernière étape : assemble le projet. Le code de départ contient les fonctions précédentes et un carnet.</p>
+<ol>
+  <li>Définis <code>rapport</code> avec un paramètre <code>carnet</code>.</li>
+  <li>Elle <strong>renvoie</strong> une liste de textes, une ligne par élève, dans l'ordre du carnet, au format <code>Awa : 12.0 (admis)</code>.</li>
+  <li>Un élève est <code>admis</code> si sa moyenne est supérieure ou égale à 10, sinon <code>refusé</code>.</li>
+  <li>Après la définition, affiche chaque ligne de <code>rapport(carnet)</code> avec une boucle <code>for</code>.</li>
+</ol>
+<p class="small muted">Avec le carnet de départ, le programme doit afficher 3 lignes : <code>Awa : 12.0 (admis)</code>, <code>Koffi : 8.67 (refusé)</code> et <code>Mina : 16.0 (admis)</code>.</p>`,
+        hint: `Appelle <code>moyennes(carnet)</code> pour avoir les moyennes. Pour chaque <code>nom, m in ...items()</code>, choisis le mot avec <code>if m >= 10:</code> / <code>else:</code>, puis construis la ligne : <code>nom + " : " + str(m) + " (" + statut + ")"</code> et ajoute-la à une liste avec <code>append</code>. Renvoie la liste, puis affiche-la avec <code>for ligne in rapport(carnet): print(ligne)</code>.`,
+        starter: `# Exercice 5 : le rapport final
+def moyenne(notes):
+    if len(notes) == 0:
+        return 0
+    return round(sum(notes) / len(notes), 2)
+
+def moyennes(carnet):
+    resultat = {}
+    for nom, notes in carnet.items():
+        resultat[nom] = moyenne(notes)
+    return resultat
+
+carnet = {"Awa": [12, 15, 9], "Koffi": [8, 7, 11], "Mina": [16, 14, 18]}
+
+# Définis rapport(carnet) : une ligne par élève, ex. "Awa : 12.0 (admis)"
+
+
+# Puis affiche chaque ligne de rapport(carnet) avec une boucle for
+
+`,
+        checks: [
+          { label: 'Tu définis la fonction rapport avec def', test: (r, code) => /^\s*def\s+rapport\s*\(/m.test(code) },
+          { label: 'Tu utilises return', test: (r, code) => /\breturn\b/.test(code) },
+          { label: 'Le programme affiche les trois lignes du rapport',
+            test: (r) => {
+              const lines = r.stdout.split('\n').map((x) => x.trim()).filter(Boolean);
+              const want = ['Awa : 12.0 (admis)', 'Koffi : 8.67 (refusé)', 'Mina : 16.0 (admis)'];
+              return lines.length === 3 && want.every((w, i) => lines[i] === w);
+            } }
+        ],
+        calls: [
+          { call: 'type(rapport({"A": [10]})).__name__', expect: 'list', label: 'La fonction renvoie une liste (avec return)' },
+          { call: 'rapport({"Awa": [12, 15, 9], "Koffi": [8, 7, 11]}) == ["Awa : 12.0 (admis)", "Koffi : 8.67 (refusé)"]', expect: true, label: 'rapport renvoie une ligne par élève, dans l\'ordre du carnet' },
+          { call: 'rapport({"Lea": [10, 10]}) == ["Lea : 10.0 (admis)"]', expect: true, label: 'Une moyenne de 10 exactement est admise : "Lea : 10.0 (admis)"' },
+          { call: 'rapport({"Sam": [9, 10]}) == ["Sam : 9.5 (refusé)"]', expect: true, label: 'Une moyenne inférieure à 10 est refusée : "Sam : 9.5 (refusé)"' },
+          { call: 'rapport({}) == []', expect: true, label: 'rapport({}) renvoie une liste vide []' }
+        ],
+        solution: `def moyenne(notes):
+    if len(notes) == 0:
+        return 0
+    return round(sum(notes) / len(notes), 2)
+
+def moyennes(carnet):
+    resultat = {}
+    for nom, notes in carnet.items():
+        resultat[nom] = moyenne(notes)
+    return resultat
+
+carnet = {"Awa": [12, 15, 9], "Koffi": [8, 7, 11], "Mina": [16, 14, 18]}
+
+def rapport(carnet):
+    lignes = []
+    for nom, m in moyennes(carnet).items():
+        if m >= 10:
+            statut = "admis"
+        else:
+            statut = "refusé"
+        lignes.append(nom + " : " + str(m) + " (" + statut + ")")
+    return lignes
+
+for ligne in rapport(carnet):
+    print(ligne)`,
+        explanation: `
+<p>Cette fonction réunit presque tout le cours : un <strong>dictionnaire</strong> parcouru avec <code>items()</code>, une <strong>condition</strong> <code>if</code> / <code>else</code> pour choisir le statut, une <strong>liste</strong> construite avec <code>append</code>, des <strong>fonctions</strong> qui s'appellent entre elles, et <code>str()</code> pour assembler un texte avec un nombre.</p>
+<p>Séparer le calcul de l'affichage est une bonne habitude : <code>rapport</code> <strong>renvoie</strong> les lignes, et la boucle finale les <strong>affiche</strong>. Tu pourrais ainsi réutiliser le rapport pour l'enregistrer ou l'envoyer, sans réécrire la fonction.</p>
+<p>Le seuil utilise <code>&gt;=</code> : une moyenne de 10 pile est admise. Tu viens de construire un vrai programme en cinq fonctions. Pour aller plus loin, tu peux ajouter une fonction qui renvoie la note maximale de chaque élève, ou qui trie le rapport par moyenne.</p>`
+      }
+    ]
+  }
+];
+// Exercices à variantes : l'application remplace la valeur d'une variable de départ
+// (ex. age = 20) et relance le code de l'utilisateur pour vérifier plusieurs cas.
+function pyLiteral(v) {
+  if (typeof v === 'boolean') return v ? 'True' : 'False';
+  if (typeof v === 'number') return String(v);
+  return JSON.stringify(String(v));
+}
+function makeVariant(code, set) {
+  let out = code;
+  const missing = [];
+  for (const [name, val] of Object.entries(set)) {
+    const re = new RegExp('^' + name + '[ \\t]*=.*$', 'm');
+    if (!re.test(out)) { missing.push(name); continue; }
+    out = out.replace(re, () => name + ' = ' + pyLiteral(val));
+  }
+  return { code: out, missing };
+}
+function describeSet(set) {
+  return Object.entries(set).map(([k, v]) => k + ' = ' + pyLiteral(v)).join(' et ');
+}
+function matchesExpected(r, expected) {
+  if (!r || !r.ok) return false;
+  if (typeof expected === 'number') {
+    if (!/^-?\d+(\.\d+)?(e[+-]?\d+)?$/i.test(r.repr)) return false;
+    return Math.abs(Number(r.repr) - expected) < 1e-9;
+  }
+  if (typeof expected === 'boolean') return r.repr === (expected ? 'True' : 'False');
+  return r.repr === "'" + expected + "'" || r.repr === '"' + expected + '"';
+}
+function expectedText(expected) {
+  if (typeof expected === 'string') return '« ' + expected + ' »';
+  if (typeof expected === 'boolean') return expected ? 'True' : 'False';
+  return String(expected);
+}
+function describeGot(r) {
+  if (!r) return 'aucun résultat';
+  if (!r.ok) return 'erreur ' + r.error + ' : ' + r.message;
+  if (r.repr === 'None') return 'None. Ta fonction ou méthode doit renvoyer le résultat avec return : print() l\'affiche mais ne le renvoie pas';
+  return r.repr;
+}
+function compareLines(stdout, expected) {
+  const got = String(stdout || '').split('\n').map((x) => x.trim()).filter(Boolean);
+  if (got.length !== expected.length) return got.length + ' ligne' + (got.length > 1 ? 's' : '') + ' affichée' + (got.length > 1 ? 's' : '') + ' au lieu de ' + expected.length;
+  for (let i = 0; i < expected.length; i++) {
+    if (got[i] !== expected[i]) return 'ligne ' + (i + 1) + ' : « ' + got[i] + ' » au lieu de « ' + expected[i] + ' »';
+  }
+  return null;
+}
+function tableLines(n) {
+  const out = [];
+  for (let i = 1; i <= 10; i++) out.push(n + ' x ' + i + ' = ' + (n * i));
+  return out;
+}
+function countdownLines(n) {
+  const out = [];
+  for (let i = n; i >= 1; i--) out.push(String(i));
+  out.push('Décollage !');
+  return out;
+}
+function lastLine(stdout) {
+  const lines = String(stdout || '').split('\n').map((x) => x.trim()).filter(Boolean);
+  return lines.length ? lines[lines.length - 1] : '';
+}
+// </DATA>
+
+/* =====================================================================
+   2. HARNAIS PYTHON : exécute le code de l'utilisateur pour de vrai
+   ===================================================================== */
+// <HARNESS>
+const HARNESS = String.raw`
+import sys, io, json, math, types, time, traceback
+
+class _PCTimeout(BaseException):
+    pass
+
+class _PCBuf(io.StringIO):
+    over = False
+    def write(self, s):
+        if self.tell() >= 20000:
+            self.over = True
+            return len(s)
+        return super().write(s)
+
+def _pc_val(v):
+    if isinstance(v, bool):
+        return v
+    if isinstance(v, int):
+        return v if abs(v) < 2**53 else None
+    if isinstance(v, float):
+        return v if math.isfinite(v) else None
+    if isinstance(v, str):
+        return v[:200]
+    return None
+
+def _pc_tracer(deadline):
+    ticks = [0]
+    def tracer(frame, event, arg):
+        if frame.f_code.co_filename != "<exercice>":
+            return None
+        def local(frame, event, arg):
+            ticks[0] += 1
+            if ticks[0] % 256 == 0 and time.monotonic() > deadline:
+                raise _PCTimeout()
+            return local
+        return local
+    return tracer
+
+def _pc_error(e, limit):
+    if isinstance(e, SystemExit):
+        return {"type": "SystemExit", "message": "Le programme a été arrêté par exit().", "line": None}
+    if isinstance(e, SyntaxError):
+        return {"type": type(e).__name__, "message": str(e.msg), "line": e.lineno}
+    line = None
+    for fr in traceback.extract_tb(e.__traceback__):
+        if fr.filename == "<exercice>":
+            line = fr.lineno
+    if isinstance(e, _PCTimeout):
+        return {"type": "Timeout", "message": "Le programme a été arrêté : il tourne depuis plus de " + str(int(limit)) + " secondes (boucle infinie ?).", "line": line}
+    return {"type": type(e).__name__, "message": str(e), "line": line}
+
+def __pc_run(code, limit=10):
+    buf = _PCBuf()
+    ns = {"__name__": "__main__"}
+    error = None
+    tracer = _pc_tracer(time.monotonic() + float(limit))
+    old_out, old_err = sys.stdout, sys.stderr
+    sys.stdout = buf
+    sys.stderr = buf
+    try:
+        sys.settrace(tracer)
+        exec(compile(code, "<exercice>", "exec"), ns)
+    except BaseException as e:
+        error = _pc_error(e, limit)
+    finally:
+        sys.settrace(None)
+        sys.stdout = old_out
+        sys.stderr = old_err
+    variables = {}
+    for name, value in ns.items():
+        if name.startswith("_") or isinstance(value, types.ModuleType) or callable(value):
+            continue
+        try:
+            shown = repr(value)
+        except Exception:
+            shown = "<non affichable>"
+        if shown.startswith("<__main__.") and " object at 0x" in shown:
+            shown = "objet " + type(value).__name__
+        variables[name] = {"type": type(value).__name__, "repr": shown[:200], "value": _pc_val(value)}
+    out = buf.getvalue()
+    return json.dumps({
+        "stdout": out[:20000],
+        "truncated": buf.over or len(out) > 20000,
+        "error": error,
+        "variables": variables
+    }, ensure_ascii=False)
+
+def __pc_eval(code, exprs_json, limit=5):
+    exprs = json.loads(exprs_json)
+    buf = _PCBuf()
+    ns = {"__name__": "__main__"}
+    error = None
+    results = []
+    tracer = _pc_tracer(time.monotonic() + float(limit))
+    old_out, old_err = sys.stdout, sys.stderr
+    sys.stdout = buf
+    sys.stderr = buf
+    try:
+        sys.settrace(tracer)
+        exec(compile(code, "<exercice>", "exec"), ns)
+        for ex in exprs:
+            try:
+                if ex.startswith("!"):
+                    exec(compile(ex[1:], "<test>", "exec"), ns)
+                    results.append({"ok": True, "repr": None})
+                    continue
+                v = eval(compile(ex, "<test>", "eval"), ns)
+                results.append({"ok": True, "repr": repr(v)[:200]})
+            except _PCTimeout:
+                raise
+            except BaseException as e:
+                results.append({"ok": False, "error": type(e).__name__, "message": str(e)[:200]})
+    except BaseException as e:
+        error = _pc_error(e, limit)
+    finally:
+        sys.settrace(None)
+        sys.stdout = old_out
+        sys.stderr = old_err
+    return json.dumps({"error": error, "results": results}, ensure_ascii=False)
+`;
+// </HARNESS>
+
+/* =====================================================================
+   3. OUTILS
+   ===================================================================== */
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  if (attrs) {
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+      else if (v === true) el.setAttribute(k, '');
+      else el.setAttribute(k, v);
+    }
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  return el;
+}
+const safe = (f) => { try { return f(); } catch (e) { return false; } };
+const app = document.getElementById('app');
+
+/* =====================================================================
+   4. SAUVEGARDE LOCALE
+   ===================================================================== */
+const STORAGE_KEY = 'pythoncoach:v1';
+const defaultState = () => ({ v: 1, done: {}, code: {} });
+function probeStorage() {
+  try {
+    const k = 'pythoncoach:probe';
+    window.localStorage.setItem(k, '1');
+    window.localStorage.removeItem(k);
+    return true;
+  } catch (e) { return false; }
+}
+let storageOk = probeStorage();
+function loadState() {
+  if (!storageOk) return defaultState();
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const p = JSON.parse(raw);
+    if (p && p.v === 1 && p.done && typeof p.done === 'object' && p.code && typeof p.code === 'object') return p;
+  } catch (e) { /* données illisibles : on repart de zéro */ }
+  return defaultState();
+}
+let state = loadState();
+function updateStorageNote() {
+  document.getElementById('storage-note').textContent = storageOk
+    ? 'Ta progression est enregistrée sur cet appareil, dans ce navigateur.'
+    : 'La sauvegarde locale est indisponible (navigation privée ou stockage bloqué) : ta progression sera perdue à la fermeture de la page.';
+}
+function saveState() {
+  if (!storageOk) return;
+  try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch (e) { storageOk = false; updateStorageNote(); }
+}
+updateStorageNote();
+
+let flushPending = null;
+window.addEventListener('pagehide', () => { if (flushPending) flushPending(); });
+
+/* =====================================================================
+   5. CHARGEMENT DE PYODIDE (source officielle : jsDelivr)
+   ===================================================================== */
+const PYODIDE_VERSION = '0.26.4';
+const PYODIDE_BASE = 'https://appassets.androidplatform.net/assets/pyodide/';
+const LOAD_TIMEOUT_MS = 90000;
+const py = { state: 'idle', instance: null, error: '', version: '', startedAt: 0, elapsed: 0, timer: null };
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => { s.remove(); reject(new Error('SCRIPT')); };
+    document.head.appendChild(s);
+  });
+}
+function explainLoadError(e) {
+  const m = e && e.message ? e.message : String(e);
+  if (m === 'TIMEOUT') return 'Le chargement a dépassé ' + (LOAD_TIMEOUT_MS / 1000) + ' secondes. Ferme complètement l\'application puis relance-la.';
+  if (m === 'SCRIPT') return 'Impossible de charger les fichiers locaux de Pyodide. Vérifie que le dossier assets/pyodide est complet dans l\'application.';
+  if (m === 'NO_LOADER') return 'Le script Pyodide a été téléchargé, mais il ne s\'est pas initialisé correctement.';
+  return 'Erreur pendant l\'initialisation de Python (détail technique : ' + m + ').';
+}
+function finishLoad(patch) {
+  clearInterval(py.timer);
+  Object.assign(py, patch);
+  updatePyUI();
+}
+async function loadPython() {
+  if (py.state === 'loading' || py.state === 'ready') return;
+  Object.assign(py, { state: 'loading', error: '', startedAt: Date.now(), elapsed: 0 });
+  clearInterval(py.timer);
+  py.timer = setInterval(() => { py.elapsed = Math.round((Date.now() - py.startedAt) / 1000); updatePyUI(); }, 1000);
+  updatePyUI();
+
+  let timeoutId;
+  const timeout = new Promise((_, reject) => { timeoutId = setTimeout(() => reject(new Error('TIMEOUT')), LOAD_TIMEOUT_MS); });
+  const work = (async () => {
+    if (typeof window.loadPyodide !== 'function') await loadScript(PYODIDE_BASE + 'pyodide.js');
+    if (typeof window.loadPyodide !== 'function') throw new Error('NO_LOADER');
+    const inst = await window.loadPyodide({ indexURL: PYODIDE_BASE });
+    inst.runPython(HARNESS);
+    const version = inst.runPython('import sys; sys.version.split()[0]');
+    return { inst, version };
+  })();
+  // Si le chargement aboutit après un délai dépassé, Python devient quand même disponible.
+  work.then(({ inst, version }) => {
+    if (py.state !== 'ready') { py.instance = inst; finishLoad({ state: 'ready', version, error: '' }); }
+  }).catch(() => { /* géré par la course ci-dessous */ });
+  try {
+    await Promise.race([work, timeout]);
+  } catch (e) {
+    if (py.state !== 'ready') finishLoad({ state: 'error', error: explainLoadError(e) });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+async function runPython(code, limit) {
+  if (py.state !== 'ready') return { notReady: true };
+  await new Promise((r) => setTimeout(r, 20)); // laisse l'interface afficher « Exécution… »
+  let fn;
+  try {
+    fn = py.instance.globals.get('__pc_run');
+    return JSON.parse(await fn(code, limit || 5));
+  } catch (e) {
+    return { internal: String(e && e.message ? e.message : e) };
+  } finally {
+    if (fn && fn.destroy) fn.destroy();
+  }
+}
+
+async function runEval(code, exprs, limit) {
+  if (py.state !== 'ready') return { notReady: true };
+  await new Promise((r) => setTimeout(r, 20));
+  let fn;
+  try {
+    fn = py.instance.globals.get('__pc_eval');
+    return JSON.parse(await fn(code, JSON.stringify(exprs), limit || 5));
+  } catch (e) {
+    return { internal: String(e && e.message ? e.message : e) };
+  } finally {
+    if (fn && fn.destroy) fn.destroy();
+  }
+}
+
+function pyLabel() {
+  if (py.state === 'loading') return 'Python : chargement… ' + py.elapsed + ' s';
+  if (py.state === 'ready') return 'Python ' + py.version + ' prêt';
+  if (py.state === 'error') return 'Python indisponible';
+  return 'Python : se charge à l\'ouverture d\'un module';
+}
+function fillBanner(el) {
+  el.replaceChildren();
+  el.hidden = py.state === 'ready' || py.state === 'idle';
+  el.className = 'alert js-banner ' + (py.state === 'error' ? 'bad' : 'warn');
+  if (py.state === 'loading') {
+    el.append(
+      h('span', { class: 'spin', 'aria-hidden': 'true' }),
+      h('span', null, 'Chargement de Python (premier démarrage, ' + py.elapsed + ' s). Tu peux lire la consigne : le bouton Exécuter fonctionnera dès que Python sera prêt.')
+    );
+  } else if (py.state === 'error') {
+    el.append(
+      h('span', null, 'Python n\'a pas pu être chargé, donc ton code ne peut pas être exécuté. ' + py.error),
+      h('button', { class: 'btn', type: 'button', onclick: loadPython }, 'Réessayer')
+    );
+  }
+}
+function updatePyUI() {
+  const pill = document.getElementById('py-pill');
+  pill.dataset.state = py.state;
+  document.getElementById('py-label').textContent = pyLabel();
+  document.getElementById('py-retry').hidden = py.state !== 'error';
+  document.querySelectorAll('.js-banner').forEach(fillBanner);
+}
+document.getElementById('py-retry').addEventListener('click', loadPython);
+
+/* =====================================================================
+   6. COMPOSANTS : éditeur, résultat, variables
+   ===================================================================== */
+let busy = false;
+function setBusy(b) {
+  busy = b;
+  document.querySelectorAll('[data-run]').forEach((btn) => { btn.disabled = b; });
+}
+async function guarded(fn) {
+  if (busy) return undefined;
+  setBusy(true);
+  try { return await fn(); } finally { setBusy(false); }
+}
+
+function createEditor({ value, minRows = 8, onInput, onRun }) {
+  const gutter = h('pre', { class: 'gutter', 'aria-hidden': 'true' });
+  const ta = h('textarea', {
+    class: 'code', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off',
+    autocorrect: 'off', wrap: 'off', 'aria-label': 'Éditeur de code Python'
+  });
+  ta.value = value;
+  const wrap = h('div', { class: 'editor' }, gutter, ta);
+  let tabEscape = false;
+
+  function refresh() {
+    const n = ta.value.split('\n').length;
+    ta.rows = Math.min(Math.max(minRows, n + 1), 40);
+    const nums = [];
+    for (let i = 1; i <= Math.max(ta.rows, n); i++) nums.push(i);
+    gutter.textContent = nums.join('\n');
+    gutter.scrollTop = ta.scrollTop;
+  }
+  function insert(text) {
+    ta.focus();
+    let ok = false;
+    try { ok = document.execCommand('insertText', false, text); } catch (e) { ok = false; }
+    if (!ok) {
+      ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end');
+      ta.dispatchEvent(new Event('input'));
+    }
+  }
+  ta.addEventListener('input', () => { refresh(); if (onInput) onInput(ta.value); });
+  ta.addEventListener('scroll', () => { gutter.scrollTop = ta.scrollTop; });
+  ta.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { tabEscape = true; return; }
+    if (e.key === 'Tab' && !e.shiftKey) {
+      if (tabEscape) { tabEscape = false; return; } // Échap puis Tab : quitter l'éditeur au clavier
+      e.preventDefault();
+      insert('    ');
+      return;
+    }
+    if (e.key !== 'Shift') tabEscape = false;
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (onRun) onRun();
+      return;
+    }
+    if (e.key === 'Enter' && !e.shiftKey && !e.altKey && !e.isComposing) {
+      const before = ta.value.slice(0, ta.selectionStart);
+      const line = before.slice(before.lastIndexOf('\n') + 1);
+      const indent = line.match(/^ */)[0];
+      const extra = /:\s*$/.test(line) ? '    ' : '';
+      if (indent || extra) { e.preventDefault(); insert('\n' + indent + extra); }
+    }
+  });
+  refresh();
+  return {
+    el: wrap,
+    getValue: () => ta.value,
+    setValue: (v) => { ta.value = v; refresh(); },
+    focus: () => ta.focus()
+  };
+}
+
+const ERROR_HINTS = {
+  AttributeError: 'L\'objet n\'a pas cet attribut ou cette méthode. Vérifie son nom (majuscules comprises) et que l\'attribut est bien créé dans __init__ avec self.nom = ...',
+  NameError: 'Python ne connaît pas ce nom. Vérifie l\'orthographe (majuscules comprises), que la variable est créée avant d\'être utilisée, et que les textes sont bien entre guillemets.',
+  SyntaxError: 'Python ne comprend pas l\'écriture de cette ligne. Cherche un guillemet ou une parenthèse non fermé, ou un signe manquant.',
+  IndentationError: 'Les lignes doivent commencer au même niveau : retire les espaces en trop au début de la ligne.',
+  TabError: 'Les lignes doivent commencer au même niveau : retire les espaces en trop au début de la ligne.',
+  TypeError: 'Tu mélanges des types incompatibles, par exemple un texte et un nombre. Dans print(), sépare les valeurs par des virgules.',
+  Timeout: 'Ta boucle ne s\'arrête jamais, ou met trop de temps. Dans un while, vérifie que la variable de la condition change à chaque tour, dans le bon sens.',
+  ZeroDivisionError: 'On ne peut pas diviser par zéro.',
+  ValueError: 'La valeur donnée n\'a pas le bon format pour cette opération.',
+  IndexError: 'Cet indice n\'existe pas dans la liste. Les indices commencent à 0 : une liste de 3 éléments a les indices 0, 1 et 2 (ou -1 pour le dernier).',
+  KeyError: 'Cette clé n\'existe pas dans le dictionnaire. Vérifie l\'orthographe de la clé, ou teste d\'abord avec « cle in dictionnaire », ou utilise dictionnaire.get(cle, valeur_par_defaut).'
+};
+
+function createPlayground({ initial, minRows, onInput, onRunRequest }) {
+  const editor = createEditor({ value: initial, minRows, onInput, onRun: onRunRequest });
+  const consoleBody = h('div', { class: 'body', 'aria-live': 'polite' });
+  const varsBody = h('div', { class: 'body' });
+  const io = h('div', { class: 'io' },
+    h('section', { class: 'panel console' }, h('h3', null, 'Résultat'), consoleBody),
+    h('section', { class: 'panel vars' }, h('h3', null, 'Variables créées'), varsBody)
+  );
+
+  function setIdle() {
+    consoleBody.replaceChildren(h('span', { class: 'muted' }, 'Le résultat de ton programme s\'affichera ici.'));
+    varsBody.replaceChildren(h('span', { class: 'muted' }, 'Après l\'exécution, tes variables et leur type apparaîtront ici.'));
+  }
+  function showVars(variables) {
+    const entries = Object.entries(variables || {});
+    if (!entries.length) { varsBody.replaceChildren(h('span', { class: 'muted' }, 'Aucune variable créée par ce programme.')); return; }
+    varsBody.replaceChildren(...entries.map(([name, v]) =>
+      h('div', { class: 'var' }, h('span', { class: 'nm' }, name), h('span', { class: 'vl' }, '= ' + v.repr), h('span', { class: 'tag' }, v.type))
+    ));
+  }
+  function showResult(res) {
+    if (res.notReady) {
+      let why = 'Python n\'est pas chargé : ton code n\'a pas été exécuté.';
+      if (py.state === 'loading') why = 'Python est encore en cours de chargement : ton code n\'a pas été exécuté. Réessaie dans quelques secondes.';
+      if (py.state === 'error') why = 'Python n\'est pas chargé : ton code n\'a pas été exécuté. ' + py.error;
+      consoleBody.replaceChildren(h('div', { class: 'err' }, why));
+      varsBody.replaceChildren(h('span', { class: 'muted' }, 'Aucune exécution.'));
+      return;
+    }
+    if (res.internal) {
+      consoleBody.replaceChildren(h('div', { class: 'err' }, 'Erreur interne de l\'application : ' + res.internal));
+      varsBody.replaceChildren(h('span', { class: 'muted' }, 'Aucune exécution.'));
+      return;
+    }
+    const parts = [];
+    if (res.stdout) parts.push(h('div', null, res.stdout));
+    if (res.truncated) parts.push(h('div', { class: 'muted' }, '(sortie tronquée à 20 000 caractères)'));
+    if (res.error) {
+      const e = res.error;
+      parts.push(h('div', { class: 'err' },
+        h('b', null, e.type), e.line ? ' à la ligne ' + e.line : '', ' : ', e.message,
+        ERROR_HINTS[e.type] ? h('div', { class: 'why' }, ERROR_HINTS[e.type]) : null));
+    } else if (!res.stdout) {
+      parts.push(h('span', { class: 'muted' }, 'Le programme s\'est exécuté sans rien afficher. Utilise print() pour voir un résultat.'));
+    }
+    consoleBody.replaceChildren(...parts);
+    showVars(res.variables);
+  }
+  async function run() {
+    consoleBody.replaceChildren(h('span', { class: 'muted' }, py.state === 'ready' ? 'Exécution…' : ''));
+    const res = await runPython(editor.getValue());
+    showResult(res);
+    return res;
+  }
+  setIdle();
+  return { editor, io, run, reset: setIdle };
+}
+
+/* =====================================================================
+   7. PROGRESSION
+   ===================================================================== */
+function moduleProgress(mod) {
+  const total = mod.steps.length;
+  const done = mod.steps.filter((s) => state.done[s.id]).length;
+  return { done, total, pct: Math.round((done / total) * 100) };
+}
+function nextStep(mod) {
+  return mod.steps.find((s) => !state.done[s.id]) || mod.steps[0];
+}
+
+/* =====================================================================
+   8. VUES
+   ===================================================================== */
+function renderDashboard() {
+  document.title = 'Python Coach : apprendre Python en pratiquant';
+  const avail = MODULES.filter((m) => m.available);
+  const cur = avail.find((m) => moduleProgress(m).done < m.steps.length);
+  let ctaHref, ctaLabel;
+  if (cur) {
+    const nx = nextStep(cur);
+    ctaHref = '#/' + cur.id + '/' + nx.id;
+    ctaLabel = moduleProgress(cur).done === 0 ? 'Commencer le module ' + (MODULES.indexOf(cur) + 1) : 'Reprendre : ' + nx.title;
+  } else {
+    ctaHref = '#/' + avail[0].id + '/' + avail[0].steps[0].id;
+    ctaLabel = 'Revoir le module 1';
+  }
+
+  const hero = h('section', { class: 'hero' },
+    h('h1', null, 'Apprends Python en écrivant du vrai code.'),
+    h('p', null, 'Des leçons courtes, des exercices que tu exécutes pour de vrai et des explications après chaque réussite. Ton code tourne dans ton navigateur : rien n\'est envoyé à un serveur.'),
+    h('a', { class: 'btn accent', href: ctaHref }, ctaLabel)
+  );
+
+  const cards = MODULES.map((m, idx) => {
+    const num = idx + 1;
+    if (!m.available) {
+      return h('article', { class: 'mod soon' }, h('h3', null, 'Module ' + num + ' : ' + m.title), h('span', { class: 'badge' }, 'Bientôt'));
+    }
+    const { done, total, pct } = moduleProgress(m);
+    const lessons = m.steps.filter((x) => x.kind === 'lesson');
+    const exos = m.steps.filter((x) => x.kind === 'exercise');
+    const lessonsDone = lessons.filter((x) => state.done[x.id]).length;
+    const exosDone = exos.filter((x) => state.done[x.id]).length;
+    const finished = done === total;
+    return h('article', { class: 'mod' + (m === cur ? ' main' : '') },
+      h('div', { class: 'mod-head' }, h('h3', null, 'Module ' + num + ' : ' + m.title), h('span', { class: 'badge' + (finished ? ' ok' : '') }, finished ? 'Terminé' : 'Disponible')),
+      h('p', { class: 'muted' }, m.summary),
+      h('div', { class: 'bar', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pct), 'aria-label': 'Progression du module ' + num },
+        h('i', { style: 'width:' + pct + '%' })),
+      h('p', { class: 'small muted' }, pct + ' % terminé : ' + lessonsDone + ' leçon' + (lessonsDone > 1 ? 's' : '') + ' sur ' + lessons.length + ', ' + exosDone + ' exercice' + (exosDone > 1 ? 's' : '') + ' sur ' + exos.length + '.'),
+      h('div', { class: 'actions' }, h('a', { class: 'btn ' + (m === cur ? 'primary' : ''), href: '#/' + m.id + '/' + (finished ? m.steps[0].id : nextStep(m).id) }, finished ? 'Revoir le module' : 'Ouvrir le module'))
+    );
+  });
+
+  const resetBtn = h('button', {
+    class: 'btn danger', type: 'button',
+    onclick: () => {
+      if (resetBtn.dataset.armed !== '1') {
+        resetBtn.dataset.armed = '1';
+        resetBtn.textContent = 'Confirmer : tout effacer';
+        setTimeout(() => { resetBtn.dataset.armed = '0'; resetBtn.textContent = 'Réinitialiser ma progression'; }, 5000);
+        return;
+      }
+      state = defaultState();
+      saveState();
+      renderDashboard();
+    }
+  }, 'Réinitialiser ma progression');
+
+  app.replaceChildren(
+    hero,
+    !storageOk ? h('div', { class: 'alert warn' }, 'La sauvegarde locale est indisponible dans ce navigateur : ta progression ne sera pas conservée.') : null,
+    h('h2', { class: 'section-title' }, 'Modules'),
+    h('div', { class: 'mods' }, ...cards),
+    h('div', { class: 'reset-zone' }, resetBtn)
+  );
+}
+
+function buildStepperList(mod, current) {
+  const ul = h('ul', { class: 'stepper' });
+  let lastKind = null;
+  mod.steps.forEach((s) => {
+    if (s.kind !== lastKind) { ul.append(h('li', { class: 'group' }, s.kind === 'lesson' ? 'Leçons' : 'Exercices')); lastKind = s.kind; }
+    const isDone = !!state.done[s.id];
+    ul.append(h('li', null,
+      h('a', { href: '#/' + mod.id + '/' + s.id, class: isDone ? 'done' : '', 'aria-current': s.id === current.id ? 'step' : null },
+        h('span', { class: 'mark', 'aria-hidden': 'true' }, isDone ? '✓' : ''),
+        h('span', null, s.title),
+        isDone ? h('span', { class: 'sr' }, '(terminé)') : null)
+    ));
+  });
+  return ul;
+}
+
+function buildNav(mod, step) {
+  const i = mod.steps.indexOf(step);
+  const prev = mod.steps[i - 1];
+  const next = mod.steps[i + 1];
+  const nav = h('div', { class: 'nav' });
+  nav.append(prev ? h('a', { class: 'btn ghost', href: '#/' + mod.id + '/' + prev.id }, 'Précédent') : h('span', { class: 'spacer' }));
+  if (step.kind === 'lesson') {
+    const label = next && next.kind === 'exercise' ? 'Passer aux exercices' : 'Leçon suivante';
+    nav.append(h('button', {
+      class: 'btn primary', type: 'button',
+      onclick: () => { state.done[step.id] = true; saveState(); go('/' + mod.id + '/' + next.id); }
+    }, label));
+  } else if (next) {
+    nav.append(h('a', { class: 'btn ' + (state.done[step.id] ? 'primary' : 'ghost'), href: '#/' + mod.id + '/' + next.id }, 'Exercice suivant'));
+  } else {
+    nav.append(h('a', { class: 'btn ' + (state.done[step.id] ? 'primary' : 'ghost'), href: '#/' }, 'Retour au tableau de bord'));
+  }
+  return nav;
+}
+
+function buildLesson(mod, step) {
+  const pg = createPlayground({ initial: step.example, minRows: 6, onRunRequest: () => runBtn.click() });
+  const runBtn = h('button', {
+    class: 'btn primary', type: 'button', 'data-run': '1', disabled: busy,
+    onclick: () => guarded(() => pg.run())
+  }, 'Exécuter');
+  return h('article', { class: 'step' },
+    h('h2', null, step.title),
+    h('div', { class: 'prose', html: step.html }),
+    h('div', { class: 'alert js-banner', hidden: true }),
+    pg.editor.el,
+    h('div', { class: 'actions' }, runBtn,
+      h('button', { class: 'btn ghost', type: 'button', onclick: () => { pg.editor.setValue(step.example); pg.reset(); } }, 'Remettre l\'exemple'),
+      h('span', { class: 'hint' }, 'Ctrl + Entrée pour exécuter')),
+    pg.io,
+    buildNav(mod, step)
+  );
+}
+
+function buildExercise(mod, step, refreshStepper) {
+  const exos = mod.steps.filter((s) => s.kind === 'exercise');
+  const n = exos.indexOf(step) + 1;
+  let t = null;
+  const onInput = (v) => {
+    clearTimeout(t);
+    const flush = () => { state.code[step.id] = v; saveState(); if (flushPending === flush) flushPending = null; };
+    flushPending = flush;
+    t = setTimeout(flush, 400);
+  };
+  const saved = state.code[step.id];
+  const pg = createPlayground({ initial: typeof saved === 'string' ? saved : step.starter, minRows: 9, onInput, onRunRequest: () => runBtn.click() });
+
+  const checksBox = h('div', { 'aria-live': 'polite' });
+  const hintBox = h('div', { class: 'hintbox', hidden: true, html: '<strong>Indice.</strong> ' + step.hint });
+  const explainBox = h('div');
+  const status = h('div');
+
+  function renderChecks(list) {
+    checksBox.replaceChildren(h('ul', { class: 'checks' }, ...list.map((c) =>
+      h('li', { class: c.ok ? 'ok' : 'ko' },
+        h('span', { class: 'ic', 'aria-hidden': 'true' }, c.ok ? '✓' : '✗'),
+        h('span', null, c.label),
+        h('span', { class: 'sr' }, c.ok ? ' : réussi' : ' : à corriger'))
+    )));
+  }
+  function showExplanation(success) {
+    const p = moduleProgress(mod);
+    explainBox.replaceChildren(h('section', { class: 'explain' + (success ? '' : ' open') },
+      h('h3', null, success ? 'Bravo, exercice réussi' : 'Solution et explications'),
+      h('div', { class: 'prose', html: step.explanation }),
+      h('p', { class: 'muted' }, 'Une solution possible :'),
+      h('pre', { class: 'sol' }, step.solution),
+      success && p.done === p.total ? h('p', null, h('strong', null, 'Tu as terminé le module ' + (MODULES.indexOf(mod) + 1) + '.'), ' ' + mod.doneText) : null
+    ));
+    if (success) status.replaceChildren(h('div', { class: 'alert good' }, 'Exercice réussi. Lis l\'explication ci-dessous avant de continuer.'));
+  }
+
+  const runBtn = h('button', { class: 'btn primary', type: 'button', 'data-run': '1', disabled: busy, onclick: () => guarded(() => pg.run()) }, 'Exécuter');
+  const verifyBtn = h('button', {
+    class: 'btn accent', type: 'button', 'data-run': '1', disabled: busy,
+    onclick: () => guarded(async () => {
+      const code = pg.editor.getValue();
+      const res = await pg.run();
+      if (res.notReady || res.internal) { checksBox.replaceChildren(); return; }
+      const list = [{ label: 'Le programme s\'exécute sans erreur', ok: !res.error }]
+        .concat(step.checks.map((c) => ({ label: c.label, ok: !!safe(() => c.test(res, code)) })));
+      if (step.cases && !res.error) {
+        for (const c of step.cases) {
+          const v = makeVariant(code, c.set);
+          if (v.missing.length) {
+            list.push({ label: 'Garde la ligne « ' + v.missing[0] + ' = … » au début du code, sans retrait : l\'application s\'en sert pour tester ton programme avec d\'autres valeurs', ok: false });
+            break;
+          }
+          const r = await runPython(v.code, 3);
+          let ok = false;
+          let got = '';
+          if (r.internal || r.notReady) { got = 'exécution impossible'; }
+          else if (r.error) { got = 'erreur ' + r.error.type + (r.error.type === 'Timeout' ? ' : le programme ne s\'arrête pas' : ''); }
+          else if (c.lines) {
+            const diff = compareLines(r.stdout, c.lines);
+            ok = diff === null;
+            got = diff || '';
+          } else { got = lastLine(r.stdout); ok = got === c.out; got = got ? '« ' + got + ' »' : 'rien'; }
+          const expected = c.desc || ('affiche « ' + c.out + ' »');
+          list.push({ label: 'Avec ' + describeSet(c.set) + ' : ' + expected + (ok ? '' : ' (obtenu : ' + got + ')'), ok });
+        }
+      }
+      if (step.calls && !res.error) {
+        const rr = await runEval(code, step.calls.map((c) => (c.setup ? '!' + c.setup : c.call)), 3);
+        if (rr.internal || rr.notReady) {
+          list.push({ label: 'Tes fonctions n\'ont pas pu être testées (Python indisponible ou erreur interne)', ok: false });
+        } else if (rr.error) {
+          list.push({ label: 'Les appels de test ont échoué : ' + rr.error.type + (rr.error.line ? ' à la ligne ' + rr.error.line : '') + ' : ' + rr.error.message, ok: false });
+        } else {
+          let stop = false;
+          step.calls.forEach((c, i) => {
+            if (stop) return;
+            const r = rr.results[i];
+            if (c.setup) {
+              if (r && r.ok) list.push({ label: 'Préparation : ' + c.setup, ok: true });
+              else { list.push({ label: 'Préparation « ' + c.setup + ' » : ' + describeGot(r), ok: false }); stop = true; }
+              return;
+            }
+            const ok = matchesExpected(r, c.expect);
+            if (c.label) {
+              const plain = r && r.ok && (r.repr === 'True' || r.repr === 'False');
+              list.push({ label: c.label + (ok || plain ? '' : ' (obtenu : ' + describeGot(r) + ')'), ok });
+            } else {
+              list.push({ label: 'Appel ' + c.call + ' : doit renvoyer ' + expectedText(c.expect) + (ok ? '' : ' (obtenu : ' + describeGot(r) + ')'), ok });
+            }
+          });
+        }
+      }
+      renderChecks(list);
+      state.code[step.id] = code;
+      if (list.every((c) => c.ok)) {
+        state.done[step.id] = true;
+        saveState();
+        showExplanation(true);
+        refreshStepper();
+      } else {
+        saveState();
+        solutionBtn.hidden = false;
+      }
+    })
+  }, 'Vérifier ma réponse');
+  const hintBtn = h('button', {
+    class: 'btn ghost', type: 'button', 'aria-expanded': 'false',
+    onclick: () => { hintBox.hidden = !hintBox.hidden; hintBtn.setAttribute('aria-expanded', String(!hintBox.hidden)); }
+  }, 'Indice');
+  const solutionBtn = h('button', {
+    class: 'btn ghost', type: 'button', hidden: !state.done[step.id] ? true : false,
+    onclick: () => showExplanation(!!state.done[step.id])
+  }, 'Voir une solution');
+  const resetBtn = h('button', {
+    class: 'btn ghost', type: 'button',
+    onclick: () => { pg.editor.setValue(step.starter); state.code[step.id] = step.starter; saveState(); pg.reset(); checksBox.replaceChildren(); }
+  }, 'Recommencer');
+
+  if (state.done[step.id]) { showExplanation(true); }
+
+  return h('article', { class: 'step' },
+    h('p', { class: 'muted small' }, 'Exercice ' + n + ' sur ' + exos.length),
+    h('h2', null, step.title),
+    h('div', { class: 'brief', html: step.brief }),
+    h('div', { class: 'alert js-banner', hidden: true }),
+    pg.editor.el,
+    h('div', { class: 'actions' }, runBtn, verifyBtn, hintBtn, solutionBtn, resetBtn),
+    h('p', { class: 'hint small muted' }, 'Ctrl + Entrée pour exécuter. Dans l\'éditeur, Tab ajoute une indentation ; Échap puis Tab quitte l\'éditeur.'),
+    hintBox,
+    pg.io,
+    checksBox,
+    status,
+    explainBox,
+    buildNav(mod, step)
+  );
+}
+
+function renderStep(mod, step) {
+  document.title = step.title + ' : Python Coach';
+  const holder = h('nav', { 'aria-label': 'Étapes du module' });
+  const refreshStepper = () => holder.replaceChildren(buildStepperList(mod, step));
+  refreshStepper();
+  const content = step.kind === 'lesson' ? buildLesson(mod, step) : buildExercise(mod, step, refreshStepper);
+  app.replaceChildren(
+    h('a', { class: 'crumb', href: '#/' }, 'Retour aux modules'),
+    h('div', { class: 'layout' }, holder, content)
+  );
+  try { window.scrollTo(0, 0); } catch (e) { /* sans importance */ }
+  if (py.state === 'idle') loadPython(); else updatePyUI();
+}
+
+/* =====================================================================
+   9. ROUTAGE (hash : #/ ou #/m1/ex2)
+   ===================================================================== */
+// La navigation ne dépend pas du hash : dans certains contextes (aperçu intégré,
+// cadre isolé), changer location.hash ne fonctionne pas. Le hash n'est qu'un bonus
+// (bouton Précédent, lien partageable) quand le navigateur l'autorise.
+let currentPath = '/';
+try { currentPath = location.hash.replace(/^#/, '') || '/'; } catch (e) { currentPath = '/'; }
+let ignoreHashChange = false;
+function go(path) {
+  currentPath = path;
+  try {
+    if (location.hash !== '#' + path) { ignoreHashChange = true; location.hash = '#' + path; }
+  } catch (e) { ignoreHashChange = false; }
+  route();
+}
+function route() {
+  if (flushPending) flushPending();
+  const parts = currentPath.replace(/^\/?/, '').split('/').filter(Boolean);
+  if (!parts.length) { renderDashboard(); updatePyUI(); return; }
+  const mod = MODULES.find((m) => m.id === parts[0] && m.available);
+  if (!mod) { go('/'); return; }
+  const step = mod.steps.find((s) => s.id === parts[1]) || nextStep(mod);
+  renderStep(mod, step);
+}
+window.addEventListener('hashchange', () => {
+  if (ignoreHashChange) { ignoreHashChange = false; return; }
+  try { currentPath = location.hash.replace(/^#/, '') || '/'; } catch (e) { return; }
+  route();
+});
+document.addEventListener('click', (e) => {
+  const a = e.target.closest && e.target.closest('a[href^="#/"]');
+  if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+  e.preventDefault();
+  go(a.getAttribute('href').slice(1));
+});
+route();
+updatePyUI();
+})();
+</script>
+</body>
+</html>
